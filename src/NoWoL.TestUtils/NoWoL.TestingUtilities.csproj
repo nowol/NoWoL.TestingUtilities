@@ -7,7 +7,7 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageProjectUrl>https://github.com/nowol/nwl.TestingUtilities</PackageProjectUrl>
     <PackageIcon>logo.png</PackageIcon>
-    <PackageReadmeFile>..\..\readme.md</PackageReadmeFile>
+    <PackageReadmeFile>readme.md</PackageReadmeFile>
     <PackageIconUrl />
     <Authors>Alexandre Drouin</Authors>
     <Copyright>2022 Alexandre Drouin</Copyright>
@@ -46,6 +46,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="..\..\readme.md" Pack="true" PackagePath="\"/>
     <None Include="..\..\docs\logo.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
