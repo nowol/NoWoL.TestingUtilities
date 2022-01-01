@@ -1,4 +1,4 @@
-# nwl.TestingUtilities
+# NoWoL.TestingUtilities
 
 NoWoL.TestingUtilities is a collection of testing utilities for C# development. Presently it contains helper methods to help test parameters validation for constructor and public methods.
 
