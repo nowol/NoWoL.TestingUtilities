@@ -9,6 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "nwl.TestingUtilities", "src
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{CE2D097B-B18C-4652-BFCF-43F02CDA6049}"
 	ProjectSection(SolutionItems) = preProject
+		build.yaml = build.yaml
 		readme.md = readme.md
 	EndProjectSection
 EndProject
