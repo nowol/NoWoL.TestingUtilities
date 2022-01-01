@@ -33,6 +33,7 @@ stages:
           contents: '**/$(buildConfiguration)/**/?(*.nupkg|*.snupkg)'
           targetFolder: '$(Build.ArtifactStagingDirectory)/artifacts'
           flattenFolders: true
+
       - task: PublishBuildArtifacts@1
         inputs:
           pathToPublish: '$(Build.ArtifactStagingDirectory)/artifacts'
@@ -53,14 +54,6 @@ stages:
           downloadPath: '$(System.ArtifactsDirectory)/artifacts/'
 
       - task: DotNetCoreCLI@2
-        enabled: false
-        inputs:
-          command: 'push'
-          packagesToPush: '$(System.ArtifactsDirectory)/artifacts/Nuget/*.nupkg;$(System.ArtifactsDirectory)/artifacts/Nuget/*.snupkg'
-          nuGetFeedType: 'external'
-          publishFeedCredentials: 'nwlNuget'
-
-      - task: DotNetCoreCLI@2
         displayName: Publish nuget packages
         enabled: true
         inputs:
@@ -71,31 +64,3 @@ stages:
             push artifacts\Nuget\*.nupkg
             -s $(NugetUrl)
             -k $(NugetApiKey)
-      - task: DotNetCoreCLI@2
-        displayName: Publish nuget symbols packages
-        enabled: false
-        inputs:
-          workingDirectory: '$(System.ArtifactsDirectory)'
-          command: custom
-          custom: nuget
-          arguments: >
-            push artifacts\Nuget\*.snupkg
-            -s $(NugetUrl)
-            -k $(NugetApiKey)
-          # command: 'push'
-          # packagesToPush: '$(System.ArtifactsDirectory)/artifacts/Nuget/*.nupkg;$(System.ArtifactsDirectory)/artifacts/Nuget/*.snupkg'
-          # nuGetFeedType: 'external'
-          # publishFeedCredentials: 'nwlNuget'
-      
-      - task: NuGetAuthenticate@0
-        enabled: false
-        inputs:
-          nuGetServiceConnections: 'nwlNuget'
-      - task: NuGetCommand@2
-        enabled: false
-        inputs:
-          command: 'push'
-          packagesToPush: '$(System.ArtifactsDirectory)/artifacts/Nuget/*.nupkg;$(System.ArtifactsDirectory)/artifacts/Nuget/*.snupkg'
-          nuGetFeedType: 'external'
-          #publishFeedCredentials: '$(NugetApiKey)'
-      
