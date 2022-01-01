@@ -15,9 +15,8 @@ stages:
   jobs:
   - job: 
     steps:
-      - task: GitVersion@5
+      - task: gitversion/execute@0
         inputs:
-          runtime: 'core'
           additionalArguments: '/updateprojectfiles'
       - script: dotnet build --configuration $(buildConfiguration)
         displayName: 'dotnet build $(buildConfiguration)'
