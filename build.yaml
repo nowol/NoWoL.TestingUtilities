@@ -1,0 +1,37 @@
+trigger:
+- main
+
+pool:
+  vmImage: windows-latest
+
+variables:
+- group: "NugetAuth"
+- name: buildConfiguration
+  value: 'Release'
+
+stages:
+- stage:
+  displayName: Build
+  jobs:
+  - job: 
+    steps:
+      - task: GitVersion@5
+        inputs:
+          runtime: 'core'
+          additionalArguments: '/updateprojectfiles'
+      - script: dotnet build --configuration $(buildConfiguration)
+        displayName: 'dotnet build $(buildConfiguration)'
+
+- stage: 
+  dependsOn: Build
+  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+  displayName: 'Nuget - Publish Public Packages'
+  jobs:
+  - job: 
+    steps:
+      - task: NuGetCommand@2
+        inputs:
+          command: 'push'
+          packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg;$(Build.ArtifactStagingDirectory)/**/*.snupkg'
+          nuGetFeedType: 'external'
+          publishFeedCredentials: '$(NugetApiKey)'
