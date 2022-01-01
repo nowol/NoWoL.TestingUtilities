@@ -2,7 +2,7 @@ trigger:
 - main
 
 pool:
-  vmImage: windows-latest
+  vmImage: windows-2019
 
 variables:
 - group: "NugetAuth"
@@ -15,11 +15,28 @@ stages:
   jobs:
   - job: 
     steps:
+      - task: gitversion/setup@0
+        displayName: Install GitVersion
+        inputs:
+          versionSpec: '5.x'
       - task: gitversion/execute@0
         inputs:
           additionalArguments: '/updateprojectfiles'
+
+      # build 
       - script: dotnet build --configuration $(buildConfiguration)
         displayName: 'dotnet build $(buildConfiguration)'
+
+      - task: CopyFiles@2
+        inputs:
+          sourceFolder: '$(Build.SourcesDirectory)'
+          contents: '**/$(buildConfiguration)/**/?(*.nupkg|*.snupkg)'
+          targetFolder: '$(Build.ArtifactStagingDirectory)/artifacts'
+          flattenFolders: true
+      - task: PublishBuildArtifacts@1
+        inputs:
+          pathToPublish: '$(Build.ArtifactStagingDirectory)/artifacts'
+          artifactName: Nuget
 
 - stage: Publishing
   dependsOn: Build
@@ -28,9 +45,57 @@ stages:
   jobs:
   - job: 
     steps:
-      - task: NuGetCommand@2
+      - task: DownloadBuildArtifacts@1
+        inputs:
+          buildType: 'current'
+          downloadType: 'single'
+          artifactName: 'Nuget'
+          downloadPath: '$(System.ArtifactsDirectory)/artifacts/'
+
+      - task: DotNetCoreCLI@2
+        enabled: false
         inputs:
           command: 'push'
-          packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg;$(Build.ArtifactStagingDirectory)/**/*.snupkg'
+          packagesToPush: '$(System.ArtifactsDirectory)/artifacts/Nuget/*.nupkg;$(System.ArtifactsDirectory)/artifacts/Nuget/*.snupkg'
           nuGetFeedType: 'external'
-          publishFeedCredentials: '$(NugetApiKey)'
+          publishFeedCredentials: 'nwlNuget'
+
+      - task: DotNetCoreCLI@2
+        displayName: Publish nuget packages
+        enabled: true
+        inputs:
+          workingDirectory: '$(System.ArtifactsDirectory)'
+          command: custom
+          custom: nuget
+          arguments: >
+            push artifacts\Nuget\*.nupkg
+            -s $(NugetUrl)
+            -k $(NugetApiKey)
+      - task: DotNetCoreCLI@2
+        displayName: Publish nuget symbols packages
+        enabled: true
+        inputs:
+          workingDirectory: '$(System.ArtifactsDirectory)'
+          command: custom
+          custom: nuget
+          arguments: >
+            push artifacts\Nuget\*.snupkg
+            -s $(NugetUrl)
+            -k $(NugetApiKey)
+          # command: 'push'
+          # packagesToPush: '$(System.ArtifactsDirectory)/artifacts/Nuget/*.nupkg;$(System.ArtifactsDirectory)/artifacts/Nuget/*.snupkg'
+          # nuGetFeedType: 'external'
+          # publishFeedCredentials: 'nwlNuget'
+      
+      - task: NuGetAuthenticate@0
+        enabled: false
+        inputs:
+          nuGetServiceConnections: 'nwlNuget'
+      - task: NuGetCommand@2
+        enabled: false
+        inputs:
+          command: 'push'
+          packagesToPush: '$(System.ArtifactsDirectory)/artifacts/Nuget/*.nupkg;$(System.ArtifactsDirectory)/artifacts/Nuget/*.snupkg'
+          nuGetFeedType: 'external'
+          #publishFeedCredentials: '$(NugetApiKey)'
+      
