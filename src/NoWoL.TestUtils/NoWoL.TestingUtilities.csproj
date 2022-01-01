@@ -5,13 +5,13 @@
     <LangVersion>latest</LangVersion>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageProjectUrl>https://github.com/nowol/nwl.TestingUtilities</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/nowol/NoWoL.TestingUtilities</PackageProjectUrl>
     <PackageIcon>logo.png</PackageIcon>
     <PackageReadmeFile>readme.md</PackageReadmeFile>
     <PackageIconUrl />
     <Authors>Alexandre Drouin</Authors>
     <Copyright>2022 Alexandre Drouin</Copyright>
-    <RepositoryUrl>https://github.com/nowol/nwl.TestingUtilities</RepositoryUrl>
+    <RepositoryUrl>https://github.com/nowol/NoWoL.TestingUtilities</RepositoryUrl>
 
     <!-- https://github.com/dotnet/sourcelink -->
     <IncludeSymbols>true</IncludeSymbols>

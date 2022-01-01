@@ -1,10 +1,10 @@
 # nwl.TestingUtilities
 
-nwl.TestingUtilities is a collection of testing utilities for C# development. Presently it contains helper methods to help test parameters validation for constructor and public methods.
+NoWoL.TestingUtilities is a collection of testing utilities for C# development. Presently it contains helper methods to help test parameters validation for constructor and public methods.
 
 ## Installation
 
-You can install the `nwl.TestingUtilities` packages using your favorite Nuget package manager.
+You can install the `NoWoL.TestingUtilities` packages using your favorite Nuget package manager.
 
 ## Usage
 
