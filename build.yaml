@@ -73,7 +73,7 @@ stages:
             -k $(NugetApiKey)
       - task: DotNetCoreCLI@2
         displayName: Publish nuget symbols packages
-        enabled: true
+        enabled: false
         inputs:
           workingDirectory: '$(System.ArtifactsDirectory)'
           command: custom
