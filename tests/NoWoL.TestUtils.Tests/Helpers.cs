@@ -6,15 +6,10 @@ using Xunit;
 
 namespace NoWoL.TestingUtilities.Tests
 {
-    public static class TestHelpers
+    internal static class TestHelpers
     {
-        public static void AssertType(Type expectedType, object value)
+        internal static void AssertType(Type expectedType, object value)
         {
-            if (expectedType == null)
-            {
-                throw new ArgumentNullException(nameof(expectedType));
-            }
-
             if (expectedType.IsValueType || expectedType == typeof(string))
             {
                 Assert.IsType(expectedType,

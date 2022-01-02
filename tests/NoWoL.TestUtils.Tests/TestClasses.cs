@@ -223,6 +223,43 @@ namespace NoWoL.TestingUtilities.Tests
     }
 
     [ExcludeFromCodeCoverage]
+    public class TestClassWithOutParameter
+    {
+        public string MethodToTest(string paramO, out string stringParam, out ISomeInterface interfaceParam, out List<int> listParam)
+        {
+            if (paramO == null)
+            {
+                throw new ArgumentNullException(nameof(paramO));
+            }
+
+            stringParam = null;
+            interfaceParam = null;
+            listParam = null;
+
+            return "Some value";
+        }
+    }
+
+    [ExcludeFromCodeCoverage]
+    public class TestClassWithRefParameter
+    {
+        public string MethodToTest(string paramO, ref string stringParam, ref ISomeInterface interfaceParam, ref List<int> listParam)
+        {
+            if (paramO == null)
+            {
+                throw new ArgumentNullException(nameof(paramO));
+            }
+
+            if (stringParam == null)
+            {
+                throw new ArgumentNullException(nameof(stringParam));
+            }
+
+            return "Some value";
+        }
+    }
+
+    [ExcludeFromCodeCoverage]
     public class TestClassWithTwoPublicConstructor
     {
         public TestClassWithTwoPublicConstructor(string param1)

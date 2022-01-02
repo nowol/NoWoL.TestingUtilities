@@ -73,11 +73,13 @@ namespace NoWoL.TestingUtilities.ObjectCreators
                 throw new ArgumentNullException(nameof(objectCreators));
             }
 
+            var expectedType = ExtractType(type);
+
             foreach (var objCreator in objectCreators)
             {
-                if (objCreator.CanHandle(type))
+                if (objCreator.CanHandle(expectedType))
                 {
-                    result = objCreator.Create(type, objectCreators);
+                    result = objCreator.Create(expectedType, objectCreators);
                     return true;
                 }
             }
@@ -85,6 +87,18 @@ namespace NoWoL.TestingUtilities.ObjectCreators
             result = null;
 
             return false;
+        }
+
+        private static Type ExtractType(Type type)
+        {
+            var expectedType = type;
+
+            if (type.IsByRef && type.HasElementType) // for out & ref parameters
+            {
+                expectedType = type.GetElementType();
+            }
+
+            return expectedType;
         }
     }
 }
