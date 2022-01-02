@@ -48,12 +48,6 @@ stages:
         inputs:
           additionalArguments: '/updateprojectfiles'
 
-      #- task: DotNetCoreCLI@2
-      #  displayName: 'Install Sonar Scanner'
-      #  inputs:
-      #    command: 'custom'
-      #    custom: 'sonarscanner'
-      #    arguments: 'begin /k:"$(SonarCloudProjectKey)" /d:sonar.login="$(SonarCloudProjectToken)"'
       - task: SonarCloudPrepare@1
         displayName: 'Install Sonar Scanner'
         env:
@@ -121,12 +115,6 @@ stages:
           mergeTestResults: true
           failTaskOnFailedTests: true
 
-      #- task: DotNetCoreCLI@2
-      #  displayName: 'Run Sonar Scanner'
-      #  inputs:
-      #    command: 'custom'
-      #    custom: 'sonarscanner'
-      #    arguments: 'end /d:sonar.login="$(SonarCloudProjectToken)"'
       - task: SonarCloudAnalyze@1
         displayName: 'Run Sonar Scanner'
 
