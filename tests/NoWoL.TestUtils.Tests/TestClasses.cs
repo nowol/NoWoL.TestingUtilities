@@ -82,7 +82,6 @@ namespace NoWoL.TestingUtilities.Tests
 
         public void MethodWithOneAction(Action<string> param)
         { }
-
     }
 
     public interface ISomeInterface { }
@@ -110,10 +109,12 @@ namespace NoWoL.TestingUtilities.Tests
             {
                 throw new ArgumentNullException(nameof(param1));
             }
+
             if (String.IsNullOrEmpty(param1))
             {
                 throw new ArgumentException("Cannot be empty", nameof(param1));
             }
+
             if (String.IsNullOrWhiteSpace(param1))
             {
                 throw new ArgumentException("Cannot be empty or whitespace", nameof(param1));
@@ -128,10 +129,12 @@ namespace NoWoL.TestingUtilities.Tests
             {
                 throw new ArgumentNullException(nameof(param1));
             }
+
             if (String.IsNullOrEmpty(param1))
             {
                 throw new ArgumentException("Cannot be empty", nameof(param1));
             }
+
             if (String.IsNullOrWhiteSpace(param1))
             {
                 throw new ArgumentException("Cannot be empty or whitespace", nameof(param1));
@@ -148,10 +151,12 @@ namespace NoWoL.TestingUtilities.Tests
             {
                 throw new ArgumentNullException(nameof(param1));
             }
+
             if (String.IsNullOrEmpty(param1))
             {
                 throw new ArgumentException("Cannot be empty", nameof(param1));
             }
+
             if (String.IsNullOrWhiteSpace(param1))
             {
                 throw new ArgumentException("Cannot be empty or whitespace", nameof(param1));
@@ -246,14 +251,17 @@ namespace NoWoL.TestingUtilities.Tests
             {
                 throw new ArgumentNullException(nameof(param1));
             }
+
             if (String.IsNullOrEmpty(param1))
             {
                 throw new ArgumentException("Cannot be empty", nameof(param1));
             }
+
             if (String.IsNullOrWhiteSpace(param1))
             {
                 throw new ArgumentException("Cannot be empty or whitespace", nameof(param1));
             }
+
             if (param2 == null)
             {
                 throw new ArgumentNullException(nameof(param2));
@@ -263,6 +271,7 @@ namespace NoWoL.TestingUtilities.Tests
             {
                 throw new ArgumentNullException(nameof(param3));
             }
+
             if (param3.Count == 0)
             {
                 throw new ArgumentException("Cannot be empty", nameof(param3));
@@ -272,6 +281,7 @@ namespace NoWoL.TestingUtilities.Tests
             {
                 throw new ArgumentNullException(nameof(param4));
             }
+
             if (param4.Length == 0)
             {
                 throw new ArgumentException("Cannot be empty", nameof(param4));
@@ -281,6 +291,7 @@ namespace NoWoL.TestingUtilities.Tests
             {
                 throw new ArgumentNullException(nameof(param5));
             }
+
             if (!param5.Any())
             {
                 throw new ArgumentException("Cannot be empty", nameof(param5));
@@ -288,6 +299,5 @@ namespace NoWoL.TestingUtilities.Tests
 
             return null;
         }
-
     }
 }
