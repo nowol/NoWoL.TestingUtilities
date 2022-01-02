@@ -8,7 +8,7 @@ namespace NoWoL.TestingUtilities.ExpectedExceptions
     /// </summary>
     public class ExpectedNoExceptionRule : IExpectedExceptionRule
     {
-        internal const string MissingException = "An exception was thrown when no exception was expected";
+        internal const string MissingException = "An exception was thrown when no exception was expected. Details: ";
 
         /// <summary>
         /// Gets the name of the rule
@@ -36,7 +36,7 @@ namespace NoWoL.TestingUtilities.ExpectedExceptions
                 return true;
             }
 
-            additionalReason = MissingException;
+            additionalReason = MissingException + ex.Message;
 
             return false;
         }

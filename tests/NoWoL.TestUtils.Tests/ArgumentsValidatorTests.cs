@@ -16,15 +16,15 @@ namespace NoWoL.TestingUtilities.Tests
                                   {
                                       new ComplexTestClass(),
                                       typeof(ComplexTestClass).GetMethod(nameof(ComplexTestClass.SomeMethod)),
+                                      null,
                                       ArgumentsValidatorHelper.DefaultCreators,
-                                      null
                                   };
             var validator = ArgumentsValidatorHelper.GetConstructorArgumentsValidator<ArgumentsValidator>(parameters);
 
             validator.SetupParameter("targetObject", ExpectedExceptionRules.None)
                      .SetupParameter("method", ExpectedExceptionRules.NotNull)
-                     .SetupParameter("objectCreators", ExpectedExceptionRules.NotNull, ExpectedExceptionRules.NotEmpty)
                      .SetupParameter("methodArguments", ExpectedExceptionRules.None)
+                     .SetupParameter("objectCreators", ExpectedExceptionRules.NotNull, ExpectedExceptionRules.NotEmpty)
                      .Validate();
         }
 
@@ -222,10 +222,11 @@ namespace NoWoL.TestingUtilities.Tests
                                              ArgumentsValidatorHelper.DefaultCreators);
 
             var ex = await Assert.ThrowsAsync<Exception>(() => sut.SetupParameter("param1", ExpectedExceptionRules.None)
-                                                                  .ValidateAsync()).ConfigureAwait(false);;
+                                                                  .ValidateAsync()).ConfigureAwait(false);
 
-            Assert.Equal("Rule 'ExpectedNoExceptionRule' for parameter 'param1' was not respected. An exception was thrown when no exception was expected",
-                         ex.Message);
+            Assert.StartsWith("Rule 'ExpectedNoExceptionRule' for parameter 'param1' was not respected. An exception was thrown when no exception was expected",
+                              ex.Message,
+                              StringComparison.Ordinal);
         }
 
         [Fact]

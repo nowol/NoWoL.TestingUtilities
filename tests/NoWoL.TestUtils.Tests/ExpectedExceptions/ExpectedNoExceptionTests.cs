@@ -26,7 +26,7 @@ namespace NoWoL.TestingUtilities.Tests.ExpectedExceptions
         {
             var validator = ArgumentsValidatorHelper.GetMethodArgumentsValidator(new ExpectedNoExceptionRule(), nameof(ExpectedNoExceptionRule.GetInvalidParameterValue), methodArguments: new object[] { MethodsHolder.GetStringParameterInfo(), null });
 
-            validator.SetupParameter("param", ExpectedExceptionRules.NotNull)
+            validator.SetupParameter("parameterInfo", ExpectedExceptionRules.NotNull)
                      .SetupParameter("defaultValue", ExpectedExceptionRules.None)
                      .Validate();
         }
@@ -40,8 +40,9 @@ namespace NoWoL.TestingUtilities.Tests.ExpectedExceptions
                                        new ArgumentNullException("paramName"),
                                        out var additionalMessage);
             Assert.False(result);
-            Assert.Equal(ExpectedNoExceptionRule.MissingException,
-                         additionalMessage);
+            Assert.StartsWith(ExpectedNoExceptionRule.MissingException,
+                              additionalMessage,
+                              StringComparison.Ordinal);
         }
 
         [Fact]

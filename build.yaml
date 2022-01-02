@@ -1,5 +1,7 @@
 trigger:
 - main
+- features/*
+- bugs/*
 
 pool:
   vmImage: windows-2022
@@ -16,24 +18,36 @@ stages:
   - job: 
     steps:
       - task: UseDotNet@2
+        displayName: 'Install .Net 6'
         inputs:
           packageType: 'sdk'
           version: '6.x'
 
       - task: gitversion/setup@0
-        displayName: Install GitVersion
+        displayName: 'Install GitVersion'
         inputs:
           versionSpec: '5.x'
 
+      - task: DotNetCoreCLI@2
+        displayName: 'Install Report Generator'
+        inputs:
+          command: 'custom'
+          custom: 'tool'
+          arguments: 'install -g dotnet-reportgenerator-globaltool'
+
       - task: gitversion/execute@0
+        displayName: 'Execute GitVersion'
         inputs:
           additionalArguments: '/updateprojectfiles'
 
-      # build 
-      - script: dotnet build --configuration $(buildConfiguration)
-        displayName: 'dotnet build $(buildConfiguration)'
+      - task: DotNetCoreCLI@2
+        displayName: 'Execute Build In $(buildConfiguration) Mode'
+        inputs:
+          command: 'build'
+          arguments: '--configuration $(buildConfiguration)'
 
       - task: CopyFiles@2
+        displayName: 'Copy Nuget Files To Artifacts Folder'
         inputs:
           sourceFolder: '$(Build.SourcesDirectory)'
           contents: '**/$(buildConfiguration)/**/?(*.nupkg|*.snupkg)'
@@ -41,13 +55,54 @@ stages:
           flattenFolders: true
 
       - task: PublishBuildArtifacts@1
+        displayName: 'Publish Nuget Files'
         inputs:
           pathToPublish: '$(Build.ArtifactStagingDirectory)/artifacts'
           artifactName: Nuget
 
+      - task: PowerShell@2
+        displayName: 'Execute Tests'
+        inputs:
+          targetType: 'inline'
+          script: |
+            dotnet test NoWoL.TestUtils.sln --collect:"XPlat Code Coverage" --no-build --no-restore --configuration $(buildConfiguration) --logger "trx;LogFileName=TestResults.trx" --results-directory "artifacts\TestResults"
+            $allTestsPassed = $?
+            
+            reportgenerator -reports:artifacts\TestResults\*\coverage.cobertura.xml -targetdir:"artifacts\coveragereport" -reporttypes:Html
+            
+            if (-not $allTestsPassed) {
+                throw "Some test have failed."
+            }
+      
+      - task: PublishCodeCoverageResults@1
+        displayName: 'Publish Code Coverage Results'
+        condition: succeededOrFailed()
+        inputs:
+          codeCoverageTool: 'Cobertura'
+          summaryFileLocation: '$(System.DefaultWorkingDirectory)/artifacts/TestResults/**/coverage.cobertura.xml'
+          reportDirectory: '$(System.DefaultWorkingDirectory)/artifacts/coveragereport'
+      
+      - task: PublishTestResults@2
+        displayName: 'Publish Test Results'
+        condition: succeededOrFailed()
+        inputs:
+          testResultsFormat: 'VSTest'
+          testResultsFiles: 'artifacts/TestResults/TestResults.trx'
+          mergeTestResults: true
+          failTaskOnFailedTests: true
+
+      - task: BuildQualityChecks@8
+        displayName: 'Ensure Code Coverage'
+        inputs:
+          checkCoverage: true
+          coverageFailOption: 'fixed'
+          coverageType: 'branches'
+          coverageThreshold: '100'
+
 - stage: Publishing
   dependsOn: Build
-  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+  #condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+  condition: and(succeeded(), eq(variables['Build.SourceBranchName'], 'main'))
   displayName: 'Nuget - Publish Public Packages'
   jobs:
   - job: 

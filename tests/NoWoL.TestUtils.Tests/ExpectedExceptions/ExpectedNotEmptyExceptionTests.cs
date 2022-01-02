@@ -87,7 +87,7 @@ namespace NoWoL.TestingUtilities.Tests.ExpectedExceptions
         {
             var validator = ArgumentsValidatorHelper.GetMethodArgumentsValidator(new ExpectedNotEmptyExceptionRule(), nameof(ExpectedNotEmptyExceptionRule.GetInvalidParameterValue), methodArguments: new object[] { MethodsHolder.GetStringParameterInfo(), null });
 
-            validator.SetupParameter("param", ExpectedExceptionRules.NotNull)
+            validator.SetupParameter("parameterInfo", ExpectedExceptionRules.NotNull)
                      .SetupParameter("defaultValue", ExpectedExceptionRules.None)
                      .Validate();
         }
