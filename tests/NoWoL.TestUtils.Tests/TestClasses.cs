@@ -5,6 +5,8 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 
+#pragma warning disable IDE0060 // Remove unused parameter
+
 namespace NoWoL.TestingUtilities.Tests
 {
     [ExcludeFromCodeCoverage]
@@ -108,7 +110,7 @@ namespace NoWoL.TestingUtilities.Tests
             {
                 throw new ArgumentNullException(nameof(param1));
             }
-            if (param1 == "")
+            if (String.IsNullOrEmpty(param1))
             {
                 throw new ArgumentException("Cannot be empty", nameof(param1));
             }
@@ -126,7 +128,7 @@ namespace NoWoL.TestingUtilities.Tests
             {
                 throw new ArgumentNullException(nameof(param1));
             }
-            if (param1 == "")
+            if (String.IsNullOrEmpty(param1))
             {
                 throw new ArgumentException("Cannot be empty", nameof(param1));
             }
@@ -146,7 +148,7 @@ namespace NoWoL.TestingUtilities.Tests
             {
                 throw new ArgumentNullException(nameof(param1));
             }
-            if (param1 == "")
+            if (String.IsNullOrEmpty(param1))
             {
                 throw new ArgumentException("Cannot be empty", nameof(param1));
             }
@@ -244,7 +246,7 @@ namespace NoWoL.TestingUtilities.Tests
             {
                 throw new ArgumentNullException(nameof(param1));
             }
-            if (param1 == "")
+            if (String.IsNullOrEmpty(param1))
             {
                 throw new ArgumentException("Cannot be empty", nameof(param1));
             }
@@ -279,7 +281,7 @@ namespace NoWoL.TestingUtilities.Tests
             {
                 throw new ArgumentNullException(nameof(param5));
             }
-            if (param5.Count() == 0)
+            if (!param5.Any())
             {
                 throw new ArgumentException("Cannot be empty", nameof(param5));
             }

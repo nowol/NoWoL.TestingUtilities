@@ -10,6 +10,11 @@ namespace NoWoL.TestingUtilities.Tests
     {
         public static void AssertType(Type expectedType, object value)
         {
+            if (expectedType == null)
+            {
+                throw new ArgumentNullException(nameof(expectedType));
+            }
+
             if (expectedType.IsValueType || expectedType == typeof(string))
             {
                 Assert.IsType(expectedType,

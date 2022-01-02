@@ -10,7 +10,7 @@ namespace NoWoL.TestingUtilities.Tests.ObjectCreators
 {
     public class GenericICollectionCreatorTests
     {
-        private readonly GenericICollectionCreator _sut = new GenericICollectionCreator();
+        private readonly GenericICollectionCreator _sut = new();
 
         [Theory]
         [Trait("Category",
@@ -50,7 +50,9 @@ namespace NoWoL.TestingUtilities.Tests.ObjectCreators
             var result = (IList)_sut.Create(type,
                                             ArgumentsValidatorHelper.DefaultCreators);
             Assert.Single(result);
+#pragma warning disable CA1062 // Validate arguments of public methods
             var elementType = type.GenericTypeArguments.Single();
+#pragma warning restore CA1062 // Validate arguments of public methods
 
             TestHelpers.AssertType(elementType,
                                    result[0]);
@@ -65,7 +67,9 @@ namespace NoWoL.TestingUtilities.Tests.ObjectCreators
         {
             var ex = Assert.Throws<NotSupportedException>(() => _sut.Create(type,
                                                                             ArgumentsValidatorHelper.DefaultCreators));
+#pragma warning disable CA1062 // Validate arguments of public methods
             Assert.Equal("Expecting an ICollection<> type however received " + type.FullName, ex.Message);
+#pragma warning restore CA1062 // Validate arguments of public methods
         }
 
         [Fact]

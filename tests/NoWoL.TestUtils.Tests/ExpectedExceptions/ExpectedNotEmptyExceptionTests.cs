@@ -4,7 +4,7 @@ using Xunit;
 
 namespace NoWoL.TestingUtilities.Tests.ExpectedExceptions
 {
-    public class ExpectedNotEmptyExceptionTests : ExpectedExceptionBaseTests<ExpectedNotEmptyException>
+    public class ExpectedNotEmptyExceptionTests : ExpectedExceptionBaseTests<ExpectedNotEmptyExceptionRule>
     {
         protected override object GetInvalidParameterValueExpectedValue()
         {
@@ -76,7 +76,8 @@ namespace NoWoL.TestingUtilities.Tests.ExpectedExceptions
         {
             var ex = Assert.Throws<NotSupportedException>(() => _sut.GetInvalidParameterValue(MethodsHolder.GetActionParameterInfo(), null));
             Assert.StartsWith("Unknown type: System.Action",
-                              ex.Message);
+                              ex.Message, 
+                              StringComparison.Ordinal);
         }
 
         [Fact]
@@ -84,7 +85,7 @@ namespace NoWoL.TestingUtilities.Tests.ExpectedExceptions
                "Unit")]
         public void GetInvalidParameterValueThrowIfInputParametersAreInvalid()
         {
-            var validator = ArgumentsValidatorHelper.GetMethodArgumentsValidator(new ExpectedNotEmptyException(), nameof(ExpectedNotEmptyException.GetInvalidParameterValue), methodArguments: new object[] { MethodsHolder.GetStringParameterInfo(), null });
+            var validator = ArgumentsValidatorHelper.GetMethodArgumentsValidator(new ExpectedNotEmptyExceptionRule(), nameof(ExpectedNotEmptyExceptionRule.GetInvalidParameterValue), methodArguments: new object[] { MethodsHolder.GetStringParameterInfo(), null });
 
             validator.SetupParameter("param", ExpectedExceptionRules.NotNull)
                      .SetupParameter("defaultValue", ExpectedExceptionRules.None)
@@ -100,7 +101,7 @@ namespace NoWoL.TestingUtilities.Tests.ExpectedExceptions
                                        null,
                                        out var additionalMessage);
             Assert.False(result);
-            Assert.Equal(ExpectedExceptionBase.NoExceptionMessage,
+            Assert.Equal(ExpectedExceptionRuleBase.NoExceptionMessage,
                          additionalMessage);
         }
 

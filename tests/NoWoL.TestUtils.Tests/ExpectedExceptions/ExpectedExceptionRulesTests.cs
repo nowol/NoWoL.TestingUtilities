@@ -10,7 +10,7 @@ namespace NoWoL.TestingUtilities.Tests.ExpectedExceptions
                "Unit")]
         public void NoneReturnsExpectedType()
         {
-            Assert.IsType<ExpectedNoException>(ExpectedExceptionRules.None);
+            Assert.IsType<ExpectedNoExceptionRule>(ExpectedExceptionRules.None);
         }
 
         [Fact]
@@ -18,7 +18,7 @@ namespace NoWoL.TestingUtilities.Tests.ExpectedExceptions
                "Unit")]
         public void NotNullReturnsExpectedType()
         {
-            Assert.IsType<ExpectedNotNullException>(ExpectedExceptionRules.NotNull);
+            Assert.IsType<ExpectedNotNullExceptionRule>(ExpectedExceptionRules.NotNull);
         }
 
         [Fact]
@@ -26,7 +26,7 @@ namespace NoWoL.TestingUtilities.Tests.ExpectedExceptions
                "Unit")]
         public void NotEmptyReturnsExpectedType()
         {
-            Assert.IsType<ExpectedNotEmptyException>(ExpectedExceptionRules.NotEmpty);
+            Assert.IsType<ExpectedNotEmptyExceptionRule>(ExpectedExceptionRules.NotEmpty);
         }
 
         [Fact]
@@ -34,7 +34,7 @@ namespace NoWoL.TestingUtilities.Tests.ExpectedExceptions
                "Unit")]
         public void NotEmptyOrWhiteSpaceReturnsExpectedType()
         {
-            Assert.IsType<ExpectedNotEmptyOrWhiteSpaceException>(ExpectedExceptionRules.NotEmptyOrWhiteSpace);
+            Assert.IsType<ExpectedNotEmptyOrWhiteSpaceExceptionRule>(ExpectedExceptionRules.NotEmptyOrWhiteSpace);
         }
 
         [Fact]
@@ -42,10 +42,10 @@ namespace NoWoL.TestingUtilities.Tests.ExpectedExceptions
                "Unit")]
         public void NotValueReturnsExpectedType()
         {
-            Assert.IsType<ExpectedExceptionWithInvalidValue<int>>(ExpectedExceptionRules.NotValue(3));
-            Assert.IsType<ExpectedExceptionWithInvalidValue<double>>(ExpectedExceptionRules.NotValue(3D));
-            Assert.IsType<ExpectedExceptionWithInvalidValue<decimal>>(ExpectedExceptionRules.NotValue(3M));
-            Assert.IsType<ExpectedExceptionWithInvalidValue<string>>(ExpectedExceptionRules.NotValue("string value"));
+            Assert.IsType<ExpectedExceptionRuleWithInvalidValue<int>>(ExpectedExceptionRules.NotValue(3));
+            Assert.IsType<ExpectedExceptionRuleWithInvalidValue<double>>(ExpectedExceptionRules.NotValue(3D));
+            Assert.IsType<ExpectedExceptionRuleWithInvalidValue<decimal>>(ExpectedExceptionRules.NotValue(3M));
+            Assert.IsType<ExpectedExceptionRuleWithInvalidValue<string>>(ExpectedExceptionRules.NotValue("string value"));
         }
     }
 }

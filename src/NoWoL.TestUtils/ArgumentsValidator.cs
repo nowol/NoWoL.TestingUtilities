@@ -7,17 +7,28 @@ using NoWoL.TestingUtilities.ObjectCreators;
 
 namespace NoWoL.TestingUtilities
 {
+    /// <summary>
+    /// Validates the arguments of a method or constructor
+    /// </summary>
     public class ArgumentsValidator
     {
         private readonly object _targetObject;
         private readonly MethodBase _method;
         private readonly IObjectCreator[] _objectCreators;
         private readonly object[] _methodArguments;
-        private readonly Dictionary<string, IExpectedException[]> _expectedExceptions = new Dictionary<string, IExpectedException[]>();
+        private readonly Dictionary<string, IExpectedExceptionRule[]> _expectedExceptions = new();
         private readonly ParameterInfo[] _parameters;
 
-        public ArgumentsValidator(object targetObject, MethodBase method, IObjectCreator[] objectCreators, object[] methodArguments)
+        /// <summary>
+        /// Creates an instance of the <see cref="ArgumentsValidator"/> class.
+        /// </summary>
+        /// <param name="targetObject">Object to test. Can be null if testing a static method.</param>
+        /// <param name="method">Method to test</param>
+        /// <param name="methodArguments">Optional arguments used for testing</param>
+        /// <param name="objectCreators">Optional object creators used to create types during testing</param>
+        public ArgumentsValidator(object targetObject, MethodBase method, object[] methodArguments, IObjectCreator[] objectCreators)
         {
+#pragma warning disable IDE0016 // Use 'throw' expression
             if (method == null)
             {
                 throw new ArgumentNullException(nameof(method));
@@ -27,6 +38,7 @@ namespace NoWoL.TestingUtilities
             {
                 throw new ArgumentNullException(nameof(objectCreators));
             }
+#pragma warning restore IDE0016 // Use 'throw' expression
 
             if (objectCreators.Length == 0)
             {
@@ -47,7 +59,13 @@ namespace NoWoL.TestingUtilities
             }
         }
 
-        public ArgumentsValidator SetupParameter(string paramName, params IExpectedException[] rules)
+        /// <summary>
+        /// Configures the validation rules for a named parameter
+        /// </summary>
+        /// <param name="paramName">Parameter to validate</param>
+        /// <param name="rules">Validation rules</param>
+        /// <returns>This instance of <see cref="ArgumentsValidator"/> to allow chaining.</returns>
+        public ArgumentsValidator SetupParameter(string paramName, params IExpectedExceptionRule[] rules)
         {
             if (paramName == null)
             {
@@ -86,6 +104,9 @@ namespace NoWoL.TestingUtilities
             return this;
         }
 
+        /// <summary>
+        /// Apply the validation rules
+        /// </summary>
         public void Validate()
         {
             ValidateMissingParameters();
@@ -129,6 +150,9 @@ namespace NoWoL.TestingUtilities
             }
         }
 
+        /// <summary>
+        /// Apply the validation rules
+        /// </summary>
         public async Task ValidateAsync()
         {
             ValidateMissingParameters();

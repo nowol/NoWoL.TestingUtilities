@@ -6,20 +6,30 @@ using NoWoL.TestingUtilities.ObjectCreators;
 
 namespace NoWoL.TestingUtilities
 {
+    /// <summary>
+    /// Helper class to create an instance of <see cref="ArgumentsValidator"/>
+    /// </summary>
     public static class ArgumentsValidatorHelper
     {
+        /// <summary>
+        /// Gets the default object creators
+        /// </summary>
         public static IObjectCreator[] DefaultCreators { get; } = new IObjectCreator[]
                                                                   {
-                                                                      new ListCreator(),
                                                                       new ArrayCreator(),
                                                                       new GenericDictionaryCreator(),
                                                                       new GenericIEnumerableCreator(),
-                                                                      new GenericIListCreator(),
+                                                                      new GenericListCreator(),
                                                                       new GenericICollectionCreator(),
                                                                       new MoqInterfaceCreator(),
                                                                       new ValueTypeCreator()
                                                                   };
 
+        /// <summary>
+        /// Creates an instance of <see cref="ArgumentsValidator"/> for the constructor of type <typeparamref name="TConstructor"/>.
+        /// </summary>
+        /// <typeparam name="TConstructor">Type to validate</typeparam>
+        /// <returns>An instance of <see cref="ArgumentsValidator"/></returns>
         public static ArgumentsValidator GetConstructorArgumentsValidator<TConstructor>()
             where TConstructor : class
         {
@@ -28,6 +38,12 @@ namespace NoWoL.TestingUtilities
             return GetMethodArgumentsValidator(null, constructor, null);
         }
 
+        /// <summary>
+        /// Creates an instance of <see cref="ArgumentsValidator"/> for the constructor of type <typeparamref name="TConstructor"/>.
+        /// </summary>
+        /// <param name="constructorArguments">Optional arguments used for testing</param>
+        /// <typeparam name="TConstructor">Type to validate</typeparam>
+        /// <returns>An instance of <see cref="ArgumentsValidator"/></returns>
         public static ArgumentsValidator GetConstructorArgumentsValidator<TConstructor>(object[] constructorArguments)
             where TConstructor : class
         {
@@ -36,6 +52,12 @@ namespace NoWoL.TestingUtilities
             return GetConstructorArgumentsValidator(constructor, constructorArguments);
         }
 
+        /// <summary>
+        /// Creates an instance of <see cref="ArgumentsValidator"/> for the specified ConstructorInfo
+        /// </summary>
+        /// <param name="constructor">Constructor to test</param>
+        /// <param name="constructorArguments">Optional arguments used for testing</param>
+        /// <returns>An instance of <see cref="ArgumentsValidator"/></returns>
         public static ArgumentsValidator GetConstructorArgumentsValidator(ConstructorInfo constructor, object[] constructorArguments)
         {
             return GetMethodArgumentsValidator(null, constructor, constructorArguments);
@@ -63,6 +85,14 @@ namespace NoWoL.TestingUtilities
             return constructor;
         }
 
+        /// <summary>
+        /// Creates an instance of <see cref="ArgumentsValidator"/> for the method <paramref name="methodName"/> of <paramref name="targetObject"/>
+        /// </summary>
+        /// <param name="targetObject">Object to test</param>
+        /// <param name="methodName">Name of the method to test</param>
+        /// <param name="methodArguments">Optional arguments used for testing</param>
+        /// <param name="objectCreators">Optional object creators used to create types during testing</param>
+        /// <returns>An instance of <see cref="ArgumentsValidator"/></returns>
         public static ArgumentsValidator GetMethodArgumentsValidator(object targetObject, string methodName, object[] methodArguments = null, IEnumerable<IObjectCreator> objectCreators = null)
         {
             if (targetObject == null)
@@ -80,9 +110,18 @@ namespace NoWoL.TestingUtilities
                 throw new ArgumentException($"Cannot find method with name '{methodName}' on type '{targetObject.GetType().FullName}'", nameof(methodName));
             }
 
-            return new ArgumentsValidator(targetObject, method, creators ?? DefaultCreators, methodArguments);
+            return new ArgumentsValidator(targetObject, method, methodArguments,
+                                          creators ?? DefaultCreators);
         }
-        
+
+        /// <summary>
+        /// Creates an instance of <see cref="ArgumentsValidator"/> for the method <paramref name="method"/>
+        /// </summary>
+        /// <param name="targetObject">Object to test. Can be null if testing a static method.</param>
+        /// <param name="method">Method to test</param>
+        /// <param name="methodArguments">Optional arguments used for testing</param>
+        /// <param name="objectCreators">Optional object creators used to create types during testing</param>
+        /// <returns>An instance of <see cref="ArgumentsValidator"/></returns>
         public static ArgumentsValidator GetMethodArgumentsValidator(object targetObject, MethodBase method, object[] methodArguments = null, IEnumerable<IObjectCreator> objectCreators = null)
         {
             if (method == null)
@@ -94,7 +133,8 @@ namespace NoWoL.TestingUtilities
 
             ValidateObjectCreators(creators);
             
-            return new ArgumentsValidator(targetObject, method, creators ?? DefaultCreators, methodArguments);
+            return new ArgumentsValidator(targetObject, method, methodArguments,
+                                          creators ?? DefaultCreators);
         }
 
         private static void ValidateObjectCreators(IObjectCreator[] objectCreators)

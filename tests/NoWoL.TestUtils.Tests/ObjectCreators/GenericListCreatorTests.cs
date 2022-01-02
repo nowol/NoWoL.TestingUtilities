@@ -8,18 +8,19 @@ using Xunit;
 
 namespace NoWoL.TestingUtilities.Tests.ObjectCreators
 {
-    public class ListCreatorTests
+    public class GenericListCreatorTests
     {
-        private readonly ListCreator _sut = new ListCreator();
+        private readonly GenericListCreator _sut = new();
 
         [Theory]
         [Trait("Category",
                "Unit")]
-        [InlineData(typeof(List<string>))]
-        [InlineData(typeof(List<int>))]
+        [InlineData(typeof(IList<string>))]
+        [InlineData(typeof(IList<int>))]
+        [InlineData(typeof(IList<double>))]
         [InlineData(typeof(List<double>))]
-        [InlineData(typeof(List<ComplexTestClass>))]
-        [InlineData(typeof(List<ISomeInterface>))]
+        [InlineData(typeof(IList<ComplexTestClass>))]
+        [InlineData(typeof(IList<ISomeInterface>))]
         public void HandledTypes(Type type)
         {
             Assert.True(_sut.CanHandle(type));
@@ -32,7 +33,7 @@ namespace NoWoL.TestingUtilities.Tests.ObjectCreators
         [InlineData(typeof(ISomeInterface))]
         [InlineData(typeof(int))]
         [InlineData(typeof(int[]))]
-        [InlineData(typeof(IEnumerable<int>))]
+        [InlineData(typeof(System.Collections.IList))]
         public void UnhandledTypes(Type type)
         {
             Assert.False(_sut.CanHandle(type));
@@ -41,16 +42,19 @@ namespace NoWoL.TestingUtilities.Tests.ObjectCreators
         [Theory]
         [Trait("Category",
                "Unit")]
-        [InlineData(typeof(List<string>))]
-        [InlineData(typeof(List<int>))]
+        [InlineData(typeof(IList<string>))]
+        [InlineData(typeof(IList<int>))]
+        [InlineData(typeof(IList<double>))]
         [InlineData(typeof(List<double>))]
-        [InlineData(typeof(List<ISomeInterface>))]
-        public void CreateArrayForType(Type type)
+        [InlineData(typeof(IList<ISomeInterface>))]
+        public void CreateListForType(Type type)
         {
             var result = (IList)_sut.Create(type,
                                             ArgumentsValidatorHelper.DefaultCreators);
             Assert.Single(result);
+#pragma warning disable CA1062 // Validate arguments of public methods
             var elementType = type.GenericTypeArguments.Single();
+#pragma warning restore CA1062 // Validate arguments of public methods
 
             TestHelpers.AssertType(elementType,
                                    result[0]);
@@ -65,7 +69,9 @@ namespace NoWoL.TestingUtilities.Tests.ObjectCreators
         {
             var ex = Assert.Throws<NotSupportedException>(() => _sut.Create(type,
                                                                             ArgumentsValidatorHelper.DefaultCreators));
-            Assert.Equal("Expecting a List<> type however received " + type.FullName, ex.Message);
+#pragma warning disable CA1062 // Validate arguments of public methods
+            Assert.Equal("Expecting an IList<> type however received " + type.FullName, ex.Message);
+#pragma warning restore CA1062 // Validate arguments of public methods
         }
 
         [Fact]
@@ -73,7 +79,7 @@ namespace NoWoL.TestingUtilities.Tests.ObjectCreators
                "Unit")]
         public void CanHandleThrowIfInputParametersAreInvalid()
         {
-            var validator = ArgumentsValidatorHelper.GetMethodArgumentsValidator(new ListCreator(), nameof(ListCreator.CanHandle), methodArguments: new object[] { null });
+            var validator = ArgumentsValidatorHelper.GetMethodArgumentsValidator(new GenericListCreator(), nameof(GenericListCreator.CanHandle), methodArguments: new object[] { null });
 
             validator.SetupParameter("type", ExpectedExceptionRules.NotNull)
                      .Validate();
@@ -84,7 +90,7 @@ namespace NoWoL.TestingUtilities.Tests.ObjectCreators
                "Unit")]
         public void CreateThrowIfInputParametersAreInvalid()
         {
-            var validator = ArgumentsValidatorHelper.GetMethodArgumentsValidator(new ListCreator(), nameof(ListCreator.Create), methodArguments: new object[] { typeof(List<int>), ArgumentsValidatorHelper.DefaultCreators });
+            var validator = ArgumentsValidatorHelper.GetMethodArgumentsValidator(new GenericListCreator(), nameof(GenericListCreator.Create), methodArguments: new object[] { typeof(IList<int>), ArgumentsValidatorHelper.DefaultCreators });
 
             validator.SetupParameter("type", ExpectedExceptionRules.NotNull)
                      .SetupParameter("objectCreators", ExpectedExceptionRules.NotNull)
@@ -94,11 +100,11 @@ namespace NoWoL.TestingUtilities.Tests.ObjectCreators
         [Fact]
         [Trait("Category",
                "Unit")]
-        public void ValidateWithException()
+        public void ValidateWithExceptionForIList()
         {
             var obj = new TestClass();
 
-            var validator = ArgumentsValidatorHelper.GetMethodArgumentsValidator(obj, nameof(TestClass.MethodToValidate));
+            var validator = ArgumentsValidatorHelper.GetMethodArgumentsValidator(obj, nameof(TestClass.MethodToValidateForIList));
             validator.SetupParameter("paramO", ExpectedExceptionRules.NotNull, ExpectedExceptionRules.NotEmpty)
                      .Validate();
         }
@@ -106,18 +112,58 @@ namespace NoWoL.TestingUtilities.Tests.ObjectCreators
         [Fact]
         [Trait("Category",
                "Unit")]
-        public void ValidateWithoutException()
+        public void ValidateWithoutExceptionForIList()
         {
             var obj = new TestClass();
 
-            var validator = ArgumentsValidatorHelper.GetMethodArgumentsValidator(obj, nameof(TestClass.MethodToValidate), methodArguments: new object[] { new List<int> { 3 } });
+            var validator = ArgumentsValidatorHelper.GetMethodArgumentsValidator(obj, nameof(TestClass.MethodToValidateForIList), methodArguments: new object[] { new List<int> { 3 } });
+            validator.SetupParameter("paramO", ExpectedExceptionRules.None)
+                     .Validate();
+        }
+
+        [Fact]
+        [Trait("Category",
+               "Unit")]
+        public void ValidateWithExceptionForList()
+        {
+            var obj = new TestClass();
+
+            var validator = ArgumentsValidatorHelper.GetMethodArgumentsValidator(obj, nameof(TestClass.MethodToValidateForList));
+            validator.SetupParameter("paramO", ExpectedExceptionRules.NotNull, ExpectedExceptionRules.NotEmpty)
+                     .Validate();
+        }
+
+        [Fact]
+        [Trait("Category",
+               "Unit")]
+        public void ValidateWithoutExceptionForList()
+        {
+            var obj = new TestClass();
+
+            var validator = ArgumentsValidatorHelper.GetMethodArgumentsValidator(obj, nameof(TestClass.MethodToValidateForList), methodArguments: new object[] { new List<int> { 3 } });
             validator.SetupParameter("paramO", ExpectedExceptionRules.None)
                      .Validate();
         }
 
         private class TestClass
         {
-            public string MethodToValidate(List<int> paramO)
+            public string MethodToValidateForIList(IList<int> paramO)
+            {
+                if (paramO == null)
+                {
+                    throw new ArgumentNullException(nameof(paramO));
+                }
+
+                if (paramO.Count == 0)
+                {
+                    throw new ArgumentException("Value cannot be an empty collection.",
+                                                nameof(paramO));
+                }
+
+                return null;
+            }
+
+            public string MethodToValidateForList(List<int> paramO)
             {
                 if (paramO == null)
                 {
