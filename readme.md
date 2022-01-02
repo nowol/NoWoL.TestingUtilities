@@ -1,5 +1,7 @@
 # NoWoL.TestingUtilities
 
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=nowol_NoWoL.TestingUtilities&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=nowol_NoWoL.TestingUtilities)
+
 NoWoL.TestingUtilities is a collection of testing utilities for C# development. Presently it contains helper methods to help test parameters validation for constructor and public methods.
 
 ## Installation
