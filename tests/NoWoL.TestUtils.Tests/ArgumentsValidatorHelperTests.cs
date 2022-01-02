@@ -174,5 +174,35 @@ namespace NoWoL.TestingUtilities.Tests
             validator.SetupParameter("paramO", ExpectedExceptionRules.NotNull)
                      .Validate();
         }
+
+        [Fact]
+        [Trait("Category",
+               "Unit")]
+        public void ValidateMethodWithOutParameters()
+        {
+            var obj = new TestClassWithOutParameter();
+
+            var validator = ArgumentsValidatorHelper.GetMethodArgumentsValidator(obj, nameof(TestClassWithOutParameter.MethodToTest));
+            validator.SetupParameter("paramO", ExpectedExceptionRules.NotNull)
+                     .SetupParameter("stringParam", ExpectedExceptionRules.None)
+                     .SetupParameter("interfaceParam", ExpectedExceptionRules.None)
+                     .SetupParameter("listParam", ExpectedExceptionRules.None)
+                     .Validate();
+        }
+
+        [Fact]
+        [Trait("Category",
+               "Unit")]
+        public void ValidateMethodWithRefParameters()
+        {
+            var obj = new TestClassWithRefParameter();
+
+            var validator = ArgumentsValidatorHelper.GetMethodArgumentsValidator(obj, nameof(TestClassWithRefParameter.MethodToTest));
+            validator.SetupParameter("paramO", ExpectedExceptionRules.NotNull)
+                     .SetupParameter("stringParam", ExpectedExceptionRules.NotNull)
+                     .SetupParameter("interfaceParam", ExpectedExceptionRules.None)
+                     .SetupParameter("listParam", ExpectedExceptionRules.None)
+                     .Validate();
+        }
     }
 }

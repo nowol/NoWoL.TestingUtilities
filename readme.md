@@ -12,8 +12,6 @@ You can install the `NoWoL.TestingUtilities` packages using your favorite Nuget 
 
 Before you can test the input arguments of a method or constructor you need to acquire an `ArgumentsValidator`. The library provides a helper class called `ArgumentsValidatorHelper` to help with the validator creation. Once you have your validator you will need to configure every parameters using the `SetupParameter` method and then call `Validate` to test the parameters.
 
-> Note: `out/ref` parameters are not yet supported.
-
 ```csharp
 // the sample code below will use the following class definition 
 public class TestClass
