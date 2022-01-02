@@ -9,7 +9,7 @@ namespace NoWoL.TestingUtilities.Tests.ObjectCreators
 {
     public class GenericDictionaryCreatorTests
     {
-        private readonly GenericDictionaryCreator _sut = new GenericDictionaryCreator();
+        private readonly GenericDictionaryCreator _sut = new();
 
         [Theory]
         [Trait("Category",
@@ -64,7 +64,9 @@ namespace NoWoL.TestingUtilities.Tests.ObjectCreators
         {
             var ex = Assert.Throws<NotSupportedException>(() => _sut.Create(type,
                                                                             ArgumentsValidatorHelper.DefaultCreators));
+#pragma warning disable CA1062 // Validate arguments of public methods
             Assert.Equal("Expecting a Dictionary type however received " + type.FullName, ex.Message);
+#pragma warning restore CA1062 // Validate arguments of public methods
         }
 
         [Fact]

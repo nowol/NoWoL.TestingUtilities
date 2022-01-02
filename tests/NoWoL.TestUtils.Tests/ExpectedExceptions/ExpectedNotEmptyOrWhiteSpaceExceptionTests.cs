@@ -4,11 +4,11 @@ using Xunit;
 
 namespace NoWoL.TestingUtilities.Tests.ExpectedExceptions
 {
-    public class ExpectedNotEmptyOrWhiteSpaceExceptionTests : ExpectedExceptionBaseTests<ExpectedNotEmptyOrWhiteSpaceException>
+    public class ExpectedNotEmptyOrWhiteSpaceExceptionTests : ExpectedExceptionBaseTests<ExpectedNotEmptyOrWhiteSpaceExceptionRule>
     {
         protected override object GetInvalidParameterValueExpectedValue()
         {
-            return ExpectedNotEmptyOrWhiteSpaceException.DefaultInvalidValue;
+            return ExpectedNotEmptyOrWhiteSpaceExceptionRule.DefaultInvalidValue;
         }
 
         [Fact]
@@ -16,7 +16,7 @@ namespace NoWoL.TestingUtilities.Tests.ExpectedExceptions
                "Unit")]
         public void ReturnsExpectedInvalidValue()
         {
-            Assert.Equal(ExpectedNotEmptyOrWhiteSpaceException.DefaultInvalidValue, _sut.GetInvalidParameterValue(MethodsHolder.GetStringParameterInfo(), null));
+            Assert.Equal(ExpectedNotEmptyOrWhiteSpaceExceptionRule.DefaultInvalidValue, _sut.GetInvalidParameterValue(MethodsHolder.GetStringParameterInfo(), null));
         }
 
         [Fact]
@@ -24,7 +24,7 @@ namespace NoWoL.TestingUtilities.Tests.ExpectedExceptions
                "Unit")]
         public void GetInvalidParameterValueThrowIfInputParametersAreInvalid()
         {
-            var validator = ArgumentsValidatorHelper.GetMethodArgumentsValidator(new ExpectedNotEmptyOrWhiteSpaceException(), nameof(ExpectedNotEmptyOrWhiteSpaceException.GetInvalidParameterValue), methodArguments: new object[] { MethodsHolder.GetStringParameterInfo(), null });
+            var validator = ArgumentsValidatorHelper.GetMethodArgumentsValidator(new ExpectedNotEmptyOrWhiteSpaceExceptionRule(), nameof(ExpectedNotEmptyOrWhiteSpaceExceptionRule.GetInvalidParameterValue), methodArguments: new object[] { MethodsHolder.GetStringParameterInfo(), null });
 
             validator.SetupParameter("param", ExpectedExceptionRules.NotNull)
                      .SetupParameter("defaultValue", ExpectedExceptionRules.None)
@@ -40,7 +40,7 @@ namespace NoWoL.TestingUtilities.Tests.ExpectedExceptions
                                        null,
                                        out var additionalMessage);
             Assert.False(result);
-            Assert.Equal(ExpectedExceptionBase.NoExceptionMessage,
+            Assert.Equal(ExpectedExceptionRuleBase.NoExceptionMessage,
                          additionalMessage);
         }
 

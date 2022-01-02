@@ -4,6 +4,8 @@ using System.Reflection;
 using NoWoL.TestingUtilities.ExpectedExceptions;
 using Xunit;
 
+#pragma warning disable CA1707 // Identifiers should not contain underscores
+
 namespace NoWoL.TestingUtilities.Tests
 {
     public class ArgumentsValidatorHelperTests
@@ -172,6 +174,5 @@ namespace NoWoL.TestingUtilities.Tests
             validator.SetupParameter("paramO", ExpectedExceptionRules.NotNull)
                      .Validate();
         }
-
     }
 }

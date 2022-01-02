@@ -35,8 +35,8 @@ namespace NoWoL.TestingUtilities.Tests
         {
             var ex = Assert.Throws<ArgumentException>(() => new ArgumentsValidator(null,
                                                                                    MethodsHolder.GetMethodInfoWithNoParameters(),
-                                                                                   ArgumentsValidatorHelper.DefaultCreators,
-                                                                                   null));
+                                                                                   null,
+                                                                                   ArgumentsValidatorHelper.DefaultCreators));
             Assert.Equal("method",
                          ex.ParamName);
         }
@@ -47,9 +47,10 @@ namespace NoWoL.TestingUtilities.Tests
         public void SetupParameterThrowsIfInputParametersAreInvalid()
         {
             var method = typeof(ComplexTestClass).GetMethod(nameof(ComplexTestClass.SomeMethod));
-            var sut = new ArgumentsValidator(new ComplexTestClass(), method, ArgumentsValidatorHelper.DefaultCreators, null);
+            var sut = new ArgumentsValidator(new ComplexTestClass(), method, null,
+                                             ArgumentsValidatorHelper.DefaultCreators);
 
-            var validator = ArgumentsValidatorHelper.GetMethodArgumentsValidator(sut, nameof(ArgumentsValidator.SetupParameter), new object[] { "param1", new IExpectedException[] { ExpectedExceptionRules.NotNull } });
+            var validator = ArgumentsValidatorHelper.GetMethodArgumentsValidator(sut, nameof(ArgumentsValidator.SetupParameter), new object[] { "param1", new IExpectedExceptionRule[] { ExpectedExceptionRules.NotNull } });
 
             validator.SetupParameter("paramName", ExpectedExceptionRules.NotNull, ExpectedExceptionRules.NotEmptyOrWhiteSpace)
                      .SetupParameter("rules", ExpectedExceptionRules.NotNull, ExpectedExceptionRules.NotEmpty)
@@ -62,9 +63,10 @@ namespace NoWoL.TestingUtilities.Tests
         public void SetupParameterThrowsIfParameterNameIsNotValid()
         {
             var method = typeof(ComplexTestClass).GetMethod(nameof(ComplexTestClass.SomeMethod));
-            var sut = new ArgumentsValidator(new ComplexTestClass(), method, ArgumentsValidatorHelper.DefaultCreators, null);
+            var sut = new ArgumentsValidator(new ComplexTestClass(), method, null,
+                                             ArgumentsValidatorHelper.DefaultCreators);
 
-            var ex = Assert.Throws<ArgumentException>(() => sut.SetupParameter("invalid", new ExpectedNoException()));
+            var ex = Assert.Throws<ArgumentException>(() => sut.SetupParameter("invalid", new ExpectedNoExceptionRule()));
 
             Assert.Equal("paramName",
                          ex.ParamName);
@@ -78,12 +80,13 @@ namespace NoWoL.TestingUtilities.Tests
         public void SetupParameterThrowsIfParameterNameHasAlreadyBeenAdded()
         {
             var method = typeof(ComplexTestClass).GetMethod(nameof(ComplexTestClass.SomeMethod));
-            var sut = new ArgumentsValidator(new ComplexTestClass(), method, ArgumentsValidatorHelper.DefaultCreators, null);
+            var sut = new ArgumentsValidator(new ComplexTestClass(), method, null,
+                                             ArgumentsValidatorHelper.DefaultCreators);
 
             sut.SetupParameter("param1",
-                               new ExpectedNoException());
+                               new ExpectedNoExceptionRule());
 
-            var ex = Assert.Throws<ArgumentException>(() => sut.SetupParameter("param1", new ExpectedNoException()));
+            var ex = Assert.Throws<ArgumentException>(() => sut.SetupParameter("param1", new ExpectedNoExceptionRule()));
 
             Assert.Equal("paramName",
                          ex.ParamName);
@@ -97,10 +100,11 @@ namespace NoWoL.TestingUtilities.Tests
         public void ValidateThrowsIfSomeParametersWereNotConfigured()
         {
             var method = typeof(ComplexTestClass).GetMethod(nameof(ComplexTestClass.SomeMethod));
-            var sut = new ArgumentsValidator(new ComplexTestClass(), method, ArgumentsValidatorHelper.DefaultCreators, null);
+            var sut = new ArgumentsValidator(new ComplexTestClass(), method, null,
+                                             ArgumentsValidatorHelper.DefaultCreators);
 
             sut.SetupParameter("param1",
-                               new ExpectedNoException());
+                               new ExpectedNoExceptionRule());
 
             var ex = Assert.Throws<InvalidOperationException>(() => sut.Validate());
 
@@ -118,7 +122,8 @@ namespace NoWoL.TestingUtilities.Tests
                              {
                                  "Freddie"
                              };
-            var sut = new ArgumentsValidator(new SimpleTestClass(), method, ArgumentsValidatorHelper.DefaultCreators, parameters);
+            var sut = new ArgumentsValidator(new SimpleTestClass(), method, parameters,
+                                             ArgumentsValidatorHelper.DefaultCreators);
 
             sut.SetupParameter("param1",
                                ExpectedExceptionRules.NotNull, ExpectedExceptionRules.NotEmptyOrWhiteSpace)
@@ -133,7 +138,8 @@ namespace NoWoL.TestingUtilities.Tests
         public void ValidateUsesGenerateDefaultParameters()
         {
             var method = typeof(SimpleTestClass).GetMethod(nameof(SimpleTestClass.MethodWithStringValidation));
-            var sut = new ArgumentsValidator(new SimpleTestClass(), method, ArgumentsValidatorHelper.DefaultCreators, null);
+            var sut = new ArgumentsValidator(new SimpleTestClass(), method, null,
+                                             ArgumentsValidatorHelper.DefaultCreators);
 
             sut.SetupParameter("param1",
                                ExpectedExceptionRules.NotNull, ExpectedExceptionRules.NotEmptyOrWhiteSpace)
@@ -148,14 +154,15 @@ namespace NoWoL.TestingUtilities.Tests
         public void ValidateThrowsIfRuleFails()
         {
             var method = typeof(SimpleTestClass).GetMethod(nameof(SimpleTestClass.MethodWithNoValidation));
-            var sut = new ArgumentsValidator(new SimpleTestClass(), method, ArgumentsValidatorHelper.DefaultCreators, null);
+            var sut = new ArgumentsValidator(new SimpleTestClass(), method, null,
+                                             ArgumentsValidatorHelper.DefaultCreators);
             sut.SetupParameter("paramW",
                                ExpectedExceptionRules.NotNull,
                                ExpectedExceptionRules.NotEmptyOrWhiteSpace);
 
             var ex = Assert.Throws<Exception>(() => sut.Validate());
 
-            Assert.Equal("Rule 'ExpectedNotNullException' for parameter 'paramW' was not respected. An exception was expected but none happened.",
+            Assert.Equal("Rule 'ExpectedNotNullExceptionRule' for parameter 'paramW' was not respected. An exception was expected but none happened.",
                          ex.Message);
 
             // no exceptions
@@ -167,7 +174,8 @@ namespace NoWoL.TestingUtilities.Tests
         public void ValidateThrowsIfAParameterCannotBeGeneratedAutomatically()
         {
             var method = typeof(SimpleTestClass).GetMethod(nameof(SimpleTestClass.MethodWithConcreteClass));
-            var sut = new ArgumentsValidator(new SimpleTestClass(), method, ArgumentsValidatorHelper.DefaultCreators, null);
+            var sut = new ArgumentsValidator(new SimpleTestClass(), method, null,
+                                             ArgumentsValidatorHelper.DefaultCreators);
             sut.SetupParameter("paramO",
                                ExpectedExceptionRules.NotNull);
 
@@ -189,7 +197,8 @@ namespace NoWoL.TestingUtilities.Tests
                              {
                                  "Freddie"
                              };
-            var sut = new ArgumentsValidator(new SimpleTestClass(), method, ArgumentsValidatorHelper.DefaultCreators, parameters);
+            var sut = new ArgumentsValidator(new SimpleTestClass(), method, parameters,
+                                             ArgumentsValidatorHelper.DefaultCreators);
 
             await sut.SetupParameter("param1",
                                ExpectedExceptionRules.NotNull, ExpectedExceptionRules.NotEmptyOrWhiteSpace)
@@ -209,12 +218,13 @@ namespace NoWoL.TestingUtilities.Tests
                              {
                                  (string)null
                              };
-            var sut = new ArgumentsValidator(new SimpleTestClass(), method, ArgumentsValidatorHelper.DefaultCreators, parameters);
+            var sut = new ArgumentsValidator(new SimpleTestClass(), method, parameters,
+                                             ArgumentsValidatorHelper.DefaultCreators);
 
             var ex = await Assert.ThrowsAsync<Exception>(() => sut.SetupParameter("param1", ExpectedExceptionRules.None)
                                                                   .ValidateAsync()).ConfigureAwait(false);;
 
-            Assert.Equal("Rule 'ExpectedNoException' for parameter 'param1' was not respected. An exception was thrown when no exception was expected",
+            Assert.Equal("Rule 'ExpectedNoExceptionRule' for parameter 'param1' was not respected. An exception was thrown when no exception was expected",
                          ex.Message);
         }
 
@@ -228,7 +238,8 @@ namespace NoWoL.TestingUtilities.Tests
                              {
                                  "Freddie"
                              };
-            var sut = new ArgumentsValidator(new SimpleTestClass(), method, ArgumentsValidatorHelper.DefaultCreators, parameters);
+            var sut = new ArgumentsValidator(new SimpleTestClass(), method, parameters,
+                                             ArgumentsValidatorHelper.DefaultCreators);
 
             await sut.SetupParameter("param1",
                                      ExpectedExceptionRules.NotNull, ExpectedExceptionRules.NotEmptyOrWhiteSpace)
@@ -248,7 +259,8 @@ namespace NoWoL.TestingUtilities.Tests
                              {
                                  "Freddie"
                              };
-            var sut = new ArgumentsValidator(new SimpleTestClass(), method, ArgumentsValidatorHelper.DefaultCreators, parameters);
+            var sut = new ArgumentsValidator(new SimpleTestClass(), method, parameters,
+                                             ArgumentsValidatorHelper.DefaultCreators);
 
             await sut.SetupParameter("paramW",
                                ExpectedExceptionRules.None)
@@ -268,7 +280,8 @@ namespace NoWoL.TestingUtilities.Tests
                              {  
                                  "Freddie"
                              };
-            var sut = new ArgumentsValidator(new SimpleTestClass(), method, ArgumentsValidatorHelper.DefaultCreators, parameters);
+            var sut = new ArgumentsValidator(new SimpleTestClass(), method, parameters,
+                                             ArgumentsValidatorHelper.DefaultCreators);
 
             await sut.SetupParameter("paramW",
                                ExpectedExceptionRules.None)
@@ -311,7 +324,8 @@ namespace NoWoL.TestingUtilities.Tests
                              {
                                  "Freddie"
                              };
-            var sut = new ArgumentsValidator(new SimpleTestClass(), method, ArgumentsValidatorHelper.DefaultCreators, parameters);
+            var sut = new ArgumentsValidator(new SimpleTestClass(), method, parameters,
+                                             ArgumentsValidatorHelper.DefaultCreators);
 
             var ex = await Assert.ThrowsAsync<NotSupportedException>(() => sut.SetupParameter("param1",
                                                                                               ExpectedExceptionRules.NotNull,
@@ -329,14 +343,15 @@ namespace NoWoL.TestingUtilities.Tests
         public async Task ValidateAsyncThrowsIfRuleFails()
         {
             var method = typeof(SimpleTestClass).GetMethod(nameof(SimpleTestClass.MethodWithNoValidationAsync));
-            var sut = new ArgumentsValidator(new SimpleTestClass(), method, ArgumentsValidatorHelper.DefaultCreators, null);
+            var sut = new ArgumentsValidator(new SimpleTestClass(), method, null,
+                                             ArgumentsValidatorHelper.DefaultCreators);
             sut.SetupParameter("paramW",
                                ExpectedExceptionRules.NotNull,
                                ExpectedExceptionRules.NotEmptyOrWhiteSpace);
 
             var ex = await Assert.ThrowsAsync<Exception>(() => sut.ValidateAsync()).ConfigureAwait(false);
 
-            Assert.Equal("Rule 'ExpectedNotNullException' for parameter 'paramW' was not respected. An exception was expected but none happened.",
+            Assert.Equal("Rule 'ExpectedNotNullExceptionRule' for parameter 'paramW' was not respected. An exception was expected but none happened.",
                          ex.Message);
 
             // no exceptions

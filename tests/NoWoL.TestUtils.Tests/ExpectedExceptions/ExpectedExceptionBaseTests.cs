@@ -4,9 +4,9 @@ using Xunit;
 namespace NoWoL.TestingUtilities.Tests.ExpectedExceptions
 {
     public abstract class ExpectedExceptionBaseTests<T>
-        where T: IExpectedException, new()
+        where T: IExpectedExceptionRule, new()
     {
-        protected readonly T _sut = new T();
+        protected readonly T _sut = new();
 
         [Fact]
         [Trait("Category",

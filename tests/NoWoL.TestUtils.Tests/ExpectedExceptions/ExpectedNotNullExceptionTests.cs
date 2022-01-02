@@ -4,7 +4,7 @@ using Xunit;
 
 namespace NoWoL.TestingUtilities.Tests.ExpectedExceptions
 {
-    public class ExpectedNotNullExceptionTests : ExpectedExceptionBaseTests<ExpectedNotNullException>
+    public class ExpectedNotNullExceptionTests : ExpectedExceptionBaseTests<ExpectedNotNullExceptionRule>
     {
         [Fact]
         [Trait("Category",
@@ -19,7 +19,7 @@ namespace NoWoL.TestingUtilities.Tests.ExpectedExceptions
                "Unit")]
         public void GetInvalidParameterValueThrowIfInputParametersAreInvalid()
         {
-            var validator = ArgumentsValidatorHelper.GetMethodArgumentsValidator(new ExpectedNotNullException(), nameof(ExpectedNotNullException.GetInvalidParameterValue), methodArguments: new object[] { MethodsHolder.GetStringParameterInfo(), null });
+            var validator = ArgumentsValidatorHelper.GetMethodArgumentsValidator(new ExpectedNotNullExceptionRule(), nameof(ExpectedNotNullExceptionRule.GetInvalidParameterValue), methodArguments: new object[] { MethodsHolder.GetStringParameterInfo(), null });
 
             validator.SetupParameter("param", ExpectedExceptionRules.NotNull)
                      .SetupParameter("defaultValue", ExpectedExceptionRules.None)
@@ -35,7 +35,7 @@ namespace NoWoL.TestingUtilities.Tests.ExpectedExceptions
                                        null,
                                        out var additionalMessage);
             Assert.False(result);
-            Assert.Equal(ExpectedExceptionBase.NoExceptionMessage,
+            Assert.Equal(ExpectedExceptionRuleBase.NoExceptionMessage,
                          additionalMessage);
         }
 

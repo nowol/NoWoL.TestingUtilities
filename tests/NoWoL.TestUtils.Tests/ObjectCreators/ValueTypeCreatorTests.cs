@@ -7,7 +7,7 @@ namespace NoWoL.TestingUtilities.Tests.ObjectCreators
 {
     public class ValueTypeCreatorTests
     {
-        private readonly ValueTypeCreator _sut = new ValueTypeCreator();
+        private readonly ValueTypeCreator _sut = new();
 
         [Theory]
         [Trait("Category",
@@ -69,7 +69,9 @@ namespace NoWoL.TestingUtilities.Tests.ObjectCreators
         {
             var ex = Assert.Throws<NotSupportedException>(() => _sut.Create(type,
                                                                             null));
+#pragma warning disable CA1062 // Validate arguments of public methods
             Assert.Equal("Expecting a string or value type however received " + type.FullName, ex.Message);
+#pragma warning restore CA1062 // Validate arguments of public methods
         }
 
         [Fact]

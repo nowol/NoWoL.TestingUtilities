@@ -9,7 +9,7 @@ namespace NoWoL.TestingUtilities.Tests.ObjectCreators
 {
     public class GenericIEnumerableCreatorTests
     {
-        private readonly GenericIEnumerableCreator _sut = new GenericIEnumerableCreator();
+        private readonly GenericIEnumerableCreator _sut = new();
 
         [Theory]
         [Trait("Category",
@@ -49,7 +49,9 @@ namespace NoWoL.TestingUtilities.Tests.ObjectCreators
             var result = (Array)_sut.Create(type,
                                             ArgumentsValidatorHelper.DefaultCreators);
             Assert.Single(result);
+#pragma warning disable CA1062 // Validate arguments of public methods
             var elementType = type.GenericTypeArguments.Single();
+#pragma warning restore CA1062 // Validate arguments of public methods
 
             TestHelpers.AssertType(elementType,
                                    result.GetValue(0));
@@ -64,7 +66,9 @@ namespace NoWoL.TestingUtilities.Tests.ObjectCreators
         {
             var ex = Assert.Throws<NotSupportedException>(() => _sut.Create(type,
                                                                             ArgumentsValidatorHelper.DefaultCreators));
+#pragma warning disable CA1062 // Validate arguments of public methods
             Assert.Equal("Expecting an IEnumerable<> type however received " + type.FullName, ex.Message);
+#pragma warning restore CA1062 // Validate arguments of public methods
         }
 
         [Fact]

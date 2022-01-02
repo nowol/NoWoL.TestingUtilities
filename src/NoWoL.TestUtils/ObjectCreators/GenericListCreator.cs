@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using Moq;
 
 namespace NoWoL.TestingUtilities.ObjectCreators
 {
     /// <summary>
-    /// Provides a way to create instances of an interface using a Mock&lt;&gt; object
+    /// Provides a way to create List of a given type
     /// </summary>
-    public class MoqInterfaceCreator : IObjectCreator
-	{
+    public class GenericListCreator : IObjectCreator
+    {
         /// <summary>
         /// Determines whether this instance can create the specified object type.
         /// </summary>
@@ -21,7 +20,13 @@ namespace NoWoL.TestingUtilities.ObjectCreators
                 throw new ArgumentNullException(nameof(type));
             }
 
-            return type.IsInterface;
+            return type.IsGenericType 
+                   &&
+                   (
+                       type.GetGenericTypeDefinition() == typeof(IList<>)
+                       ||
+                       type.GetGenericTypeDefinition() == typeof(List<>)
+                   );
         }
 
         /// <summary>
@@ -31,18 +36,24 @@ namespace NoWoL.TestingUtilities.ObjectCreators
         /// <param name="objectCreators">A list of <see cref="IObjectCreator"/> to handle creation of sub objects.</param>
         /// <returns>The created object.</returns>
         public object Create(Type type, ICollection<IObjectCreator> objectCreators)
-		{
+        {
             if (type == null)
             {
                 throw new ArgumentNullException(nameof(type));
             }
 
+            if (objectCreators == null)
+            {
+                throw new ArgumentNullException(nameof(objectCreators));
+            }
+
             if (CanHandle(type))
             {
-				return type.GetObjectMock(MockBehavior.Loose);
-			}
+                var itemType = type.GetGenericArguments()[0];
+                return CreatorHelpers.CreateList(itemType, objectCreators);
+            }
 
-            throw new NotSupportedException("Expecting an interface however received " + type.FullName);
-		}
-	}
+            throw new NotSupportedException("Expecting an IList<> type however received " + type.FullName);
+        }
+    }
 }

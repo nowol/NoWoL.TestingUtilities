@@ -47,7 +47,7 @@ namespace NoWoL.TestingUtilities.Tests.ExpectedExceptions
             }
         }
 
-        protected readonly ExpectedExceptionWithInvalidValue<T> _sut;
+        protected readonly ExpectedExceptionRuleWithInvalidValue<T> _sut;
         private readonly T _invalidValue;
         private readonly T _validValue;
 
@@ -55,7 +55,7 @@ namespace NoWoL.TestingUtilities.Tests.ExpectedExceptions
         {
             _invalidValue = invalidValue;
             _validValue = validValue;
-            _sut = new ExpectedExceptionWithInvalidValue<T>(invalidValue);
+            _sut = new ExpectedExceptionRuleWithInvalidValue<T>(invalidValue);
         }
 
         [Fact]
@@ -63,7 +63,7 @@ namespace NoWoL.TestingUtilities.Tests.ExpectedExceptions
                "Unit")]
         public void ReturnsName()
         {
-            Assert.Equal("ExpectedExceptionWithInvalidValue for type " + typeof(T).Name,
+            Assert.Equal("ExpectedExceptionRuleWithInvalidValue for type " + typeof(T).Name,
                          _sut.Name);
         }
 
@@ -91,7 +91,7 @@ namespace NoWoL.TestingUtilities.Tests.ExpectedExceptions
                "Unit")]
         public void GetInvalidParameterValueThrowIfInputParametersAreInvalid()
         {
-            var validator = ArgumentsValidatorHelper.GetMethodArgumentsValidator(new ExpectedExceptionWithInvalidValue<T>(_invalidValue), nameof(ExpectedExceptionWithInvalidValue<T>.GetInvalidParameterValue), methodArguments: new object[] { MethodsHolder.GetStringParameterInfo(), null });
+            var validator = ArgumentsValidatorHelper.GetMethodArgumentsValidator(new ExpectedExceptionRuleWithInvalidValue<T>(_invalidValue), nameof(ExpectedExceptionRuleWithInvalidValue<T>.GetInvalidParameterValue), methodArguments: new object[] { MethodsHolder.GetStringParameterInfo(), null });
 
             validator.SetupParameter("param", ExpectedExceptionRules.NotNull)
                      .SetupParameter("defaultValue", ExpectedExceptionRules.None)
@@ -107,7 +107,7 @@ namespace NoWoL.TestingUtilities.Tests.ExpectedExceptions
                                        null,
                                        out var additionalMessage);
             Assert.False(result);
-            Assert.Equal(ExpectedExceptionBase.NoExceptionMessage,
+            Assert.Equal(ExpectedExceptionRuleBase.NoExceptionMessage,
                          additionalMessage);
         }
 

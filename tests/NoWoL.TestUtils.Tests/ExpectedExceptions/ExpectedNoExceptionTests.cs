@@ -4,7 +4,7 @@ using Xunit;
 
 namespace NoWoL.TestingUtilities.Tests.ExpectedExceptions
 {
-    public class ExpectedNoExceptionTests : ExpectedExceptionBaseTests<ExpectedNoException>
+    public class ExpectedNoExceptionTests : ExpectedExceptionBaseTests<ExpectedNoExceptionRule>
     {
         protected override object GetInvalidParameterValueExpectedValue()
         {
@@ -24,7 +24,7 @@ namespace NoWoL.TestingUtilities.Tests.ExpectedExceptions
                "Unit")]
         public void GetInvalidParameterValueThrowIfInputParametersAreInvalid()
         {
-            var validator = ArgumentsValidatorHelper.GetMethodArgumentsValidator(new ExpectedNoException(), nameof(ExpectedNoException.GetInvalidParameterValue), methodArguments: new object[] { MethodsHolder.GetStringParameterInfo(), null });
+            var validator = ArgumentsValidatorHelper.GetMethodArgumentsValidator(new ExpectedNoExceptionRule(), nameof(ExpectedNoExceptionRule.GetInvalidParameterValue), methodArguments: new object[] { MethodsHolder.GetStringParameterInfo(), null });
 
             validator.SetupParameter("param", ExpectedExceptionRules.NotNull)
                      .SetupParameter("defaultValue", ExpectedExceptionRules.None)
@@ -40,7 +40,7 @@ namespace NoWoL.TestingUtilities.Tests.ExpectedExceptions
                                        new ArgumentNullException("paramName"),
                                        out var additionalMessage);
             Assert.False(result);
-            Assert.Equal(ExpectedNoException.MissingException,
+            Assert.Equal(ExpectedNoExceptionRule.MissingException,
                          additionalMessage);
         }
 
