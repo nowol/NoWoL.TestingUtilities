@@ -1,6 +1,10 @@
 # NoWoL.TestingUtilities
 
+![Build Status](https://dev.azure.com/nowol/DesertOctopus/_apis/build/status/nowol.nwl.TestingUtilities?branchName=main)
+[![Version](https://img.shields.io/nuget/vpre/NoWoL.TestingUtilities.svg)](https://www.nuget.org/packages/NoWoL.TestingUtilities)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=nowol_NoWoL.TestingUtilities&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=nowol_NoWoL.TestingUtilities)
+![Sonar Coverage](https://img.shields.io/sonar/coverage/nowol_NoWoL.TestingUtilities/main?server=https%3A%2F%2Fsonarcloud.io)
+![Sonar Tests](https://img.shields.io/sonar/tests/nowol_NoWoL.TestingUtilities/main?compact_message&server=https%3A%2F%2Fsonarcloud.io)
 
 NoWoL.TestingUtilities is a collection of testing utilities for C# development. Presently it contains helper methods to help test parameters validation for constructor and public methods.
 
