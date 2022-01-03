@@ -62,6 +62,7 @@ stages:
           extraProperties: |
               sonar.cs.vstest.reportsPaths=artifacts\TestResults\*.trx
               sonar.cs.vscoveragexml.reportsPaths=artifacts\TestResults\**\*.coveragexml
+              sonar.cs.opencover.reportsPaths=artifacts\TestResults\**\coverage.opencover.xml
               sonar.verbose=true
 
       - task: DotNetCoreCLI@2
@@ -89,7 +90,7 @@ stages:
         inputs:
           targetType: 'inline'
           script: |
-            dotnet test NoWoL.TestUtils.sln --collect:"XPlat Code Coverage" --no-build --no-restore --configuration $(buildConfiguration) --logger "trx;LogFileName=TestResults.trx" --results-directory "artifacts\TestResults"
+            dotnet test NoWoL.TestUtils.sln --collect:"XPlat Code Coverage" --no-build --no-restore --configuration $(buildConfiguration) --logger "trx;LogFileName=TestResults.trx" --results-directory "artifacts\TestResults" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=cobertura,opencover
             $allTestsPassed = $?
             
             reportgenerator -reports:artifacts\TestResults\*\coverage.cobertura.xml -targetdir:"artifacts\coveragereport" -reporttypes:Html
@@ -118,6 +119,9 @@ stages:
       - task: SonarCloudAnalyze@1
         displayName: 'Run Sonar Scanner'
 
+      - task: SonarCloudPublish@1
+        inputs:
+          pollingTimeoutSec: '300'
 
       - task: BuildQualityChecks@8
         displayName: 'Ensure Code Coverage'
