@@ -40,7 +40,7 @@ namespace NoWoL.TestingUtilities.Expressions
 
             if (expression.Body is not MethodCallExpression callExpression)
             {
-                throw new ArgumentException($"The expression '{expression?.Body}' of type '{expression?.Body?.GetType().Name}' is unsupported");
+                throw new ArgumentException($"The expression '{expression.Body}' of type '{expression.Body.GetType().Name}' is unsupported");
             }
 
             var info = new ExpressionMethodInfo
