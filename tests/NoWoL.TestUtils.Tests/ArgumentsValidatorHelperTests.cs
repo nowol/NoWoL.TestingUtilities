@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using NoWoL.TestingUtilities.ExpectedExceptions;
 using Xunit;
 
@@ -178,6 +180,19 @@ namespace NoWoL.TestingUtilities.Tests
         [Fact]
         [Trait("Category",
                "Unit")]
+        public void GetMethodArgumentsValidatorThrowsIfTheMethodIsNotAvailableOnTargetObject()
+        {
+            var obj = new SimpleTestClass();
+            var method = typeof(ComplexTestClass).GetMethod(nameof(ComplexTestClass.SomeMethod));
+
+            var ex = Assert.Throws<InvalidOperationException>(() => ArgumentsValidatorHelper.GetMethodArgumentsValidator(obj, method));
+            Assert.Equal("The specified method 'SomeMethod' is not available on the targeted object (NoWoL.TestingUtilities.Tests.SimpleTestClass).",
+                         ex.Message);
+        }
+
+        [Fact]
+        [Trait("Category",
+               "Unit")]
         public void ValidateMethodWithOutParameters()
         {
             var obj = new TestClassWithOutParameter();
@@ -203,6 +218,46 @@ namespace NoWoL.TestingUtilities.Tests
                      .SetupParameter("interfaceParam", ExpectedExceptionRules.None)
                      .SetupParameter("listParam", ExpectedExceptionRules.None)
                      .Validate();
+        }
+
+        [Fact]
+        [Trait("Category",
+               "Unit")]
+        public void ValidateExpression()
+        {
+            var obj = new ComplexTestClass();
+
+            var validator = ArgumentsValidatorHelper.GetExpressionArgumentsValidator(obj);
+            validator.Setup(x => x.SomeMethod(validator.For<string>(ExpectedExceptionRules.NotNull, ExpectedExceptionRules.NotEmptyOrWhiteSpace),
+                                              validator.For<ISomeInterface>(ExpectedExceptionRules.NotNull),
+                                              validator.For<List<ISomeInterface>>(ExpectedExceptionRules.NotNull, ExpectedExceptionRules.NotEmpty),
+                                              validator.For<ISomeInterface[]>(ExpectedExceptionRules.NotNull, ExpectedExceptionRules.NotEmpty),
+                                              validator.For<IEnumerable<ISomeInterface>>(ExpectedExceptionRules.NotNull, ExpectedExceptionRules.NotEmpty)))
+                     .Validate();
+        }
+
+        [Fact]
+        [Trait("Category",
+               "Unit")]
+        public void ValidateExpressionUsesTheSpecifiedObjectCreators()
+        {
+            var obj = new SimpleTestClass();
+
+            var validator = ArgumentsValidatorHelper.GetExpressionArgumentsValidator(obj, objectCreators: new [] { new ComplexTestClassObjectCreator() });
+            validator.Setup(x => x.MethodWithConcreteClass(validator.For<ComplexTestClass>(ExpectedExceptionRules.None)))
+                     .Validate();
+        }
+
+        [Fact]
+        [Trait("Category",
+               "Unit")]
+        public async Task ValidateExpressionAsync()
+        {
+            var obj = new SimpleTestClass();
+
+            var validator = ArgumentsValidatorHelper.GetExpressionArgumentsValidator(obj);
+            await validator.Setup(x => x.MethodWithStringValidationAsync(validator.For<string>(ExpectedExceptionRules.NotNull, ExpectedExceptionRules.NotEmpty, ExpectedExceptionRules.NotEmptyOrWhiteSpace)))
+                           .ValidateAsync().ConfigureAwait(false);
         }
     }
 }

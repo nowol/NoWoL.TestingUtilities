@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
+using Castle.DynamicProxy.Generators.Emitters.SimpleAST;
+using NoWoL.TestingUtilities.Expressions;
 using NoWoL.TestingUtilities.ObjectCreators;
 
 namespace NoWoL.TestingUtilities
@@ -128,6 +131,11 @@ namespace NoWoL.TestingUtilities
             {
                 throw new ArgumentNullException(nameof(method));
             }
+            
+            if (targetObject != null && method.DeclaringType != targetObject.GetType())
+            {
+                throw new InvalidOperationException($"The specified method '{method.Name}' is not available on the targeted object ({targetObject.GetType()}).");
+            }
 
             var creators = objectCreators?.ToArray();
 
@@ -144,6 +152,20 @@ namespace NoWoL.TestingUtilities
                 throw new ArgumentException("Value cannot be an empty collection.",
                                             nameof(objectCreators));
             }
+        }
+
+        /// <summary>
+        /// Creates an instance of <see cref="ArgumentsValidator"/> for the expression.
+        /// <remarks>This is currently experimental</remarks>
+        /// </summary>
+        /// <typeparam name="T">Type of the object to test</typeparam>
+        /// <param name="targetObject">Object to test</param>
+        /// <param name="objectCreators">Optional object creators used to create types during testing</param>
+        /// <returns></returns>
+        public static ExpressionArgumentsValidator<T> GetExpressionArgumentsValidator<T>(T targetObject, IEnumerable<IObjectCreator> objectCreators = null)
+            where T : class
+        {
+            return new ExpressionArgumentsValidator<T>(targetObject, objectCreators);
         }
     }
 }

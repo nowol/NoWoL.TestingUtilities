@@ -1,3 +1,4 @@
+
 # NoWoL.TestingUtilities
 
 ![Build Status](https://dev.azure.com/nowol/DesertOctopus/_apis/build/status/nowol.nwl.TestingUtilities?branchName=main)
@@ -50,6 +51,18 @@ validator.SetupParameter("param1", ExpectedExceptionRules.None) // validates tha
 ```
 
 It is also possible to test `async/await` code using the `ValidateAsync` method.
+
+### Expressions
+
+You can use a LINQ expression to avoid using magic strings for the name of the parameters. The helper below will automatically fill in the parameters' names in the order they are used in the expression. Using `validator.For` is currently required to correctly wire up the validator since `ConstantExpression` are not yet supported.
+
+```csharp
+var obj = new TestClass();
+var validator = ArgumentsValidatorHelper.GetExpressionArgumentsValidator(obj);
+validator.Setup(x => x.MyMethod(validator.For<string>(ExpectedExceptionRules.None),
+                                validator.For<List<int>>(ExpectedExceptionRules.NotNull, ExpectedExceptionRules.NotEmpty)))
+         .Validate();
+```
 
 ### Type creation
 
