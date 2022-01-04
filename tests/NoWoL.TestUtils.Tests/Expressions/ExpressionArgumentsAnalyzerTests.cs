@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq.Expressions;
 using NoWoL.TestingUtilities.Expressions;
 using Xunit;
 
@@ -16,6 +17,28 @@ namespace NoWoL.TestingUtilities.Tests.Expressions
             var ex = Assert.Throws<ArgumentException>(() => sut.Analyze<TestClass, int>(x => x.Number));
             Assert.Equal("The expression 'x.Number' of type 'PropertyExpression' is unsupported",
                          ex.Message);
+        }
+
+        [Fact]
+        [Trait("Category",
+               "Unit")]
+        public void AnalyzeFuncThrowsIfExpressionIsNull()
+        {
+            var sut = new ExpressionArgumentsAnalyzer();
+            var ex = Assert.Throws<ArgumentNullException>(() => sut.Analyze<TestClass, int>((Expression<Func<TestClass, int>>)null));
+            Assert.Equal("expression",
+                         ex.ParamName);
+        }
+
+        [Fact]
+        [Trait("Category",
+               "Unit")]
+        public void AnalyzeActionThrowsIfExpressionIsNull()
+        {
+            var sut = new ExpressionArgumentsAnalyzer();
+            var ex = Assert.Throws<ArgumentNullException>(() => sut.Analyze<TestClass>((Expression<Action<TestClass>>)null));
+            Assert.Equal("expression",
+                         ex.ParamName);
         }
 
         [Fact]

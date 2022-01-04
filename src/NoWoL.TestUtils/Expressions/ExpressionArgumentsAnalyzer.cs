@@ -33,7 +33,12 @@ namespace NoWoL.TestingUtilities.Expressions
 
         private ExpressionMethodInfo AnalyzeLambdaExpression(LambdaExpression expression)
         {
-            if (expression?.Body is not MethodCallExpression callExpression)
+            if (expression == null)
+            {
+                throw new ArgumentNullException(nameof(expression));
+            }
+
+            if (expression.Body is not MethodCallExpression callExpression)
             {
                 throw new ArgumentException($"The expression '{expression?.Body}' of type '{expression?.Body?.GetType().Name}' is unsupported");
             }
