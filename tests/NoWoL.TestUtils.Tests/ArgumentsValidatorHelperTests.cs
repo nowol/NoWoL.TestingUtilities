@@ -185,8 +185,8 @@ namespace NoWoL.TestingUtilities.Tests
             var obj = new SimpleTestClass();
             var method = typeof(ComplexTestClass).GetMethod(nameof(ComplexTestClass.SomeMethod));
 
-            var ex = Assert.Throws<InvalidOperationException>(() => ArgumentsValidatorHelper.GetMethodArgumentsValidator(obj, method));
-            Assert.Equal("The specified method 'SomeMethod' is not available on the targeted object (NoWoL.TestingUtilities.Tests.SimpleTestClass).",
+            var ex = Assert.Throws<MissingMethodException>(() => ArgumentsValidatorHelper.GetMethodArgumentsValidator(obj, method));
+            Assert.Equal("Method 'NoWoL.TestingUtilities.Tests.SimpleTestClass.SomeMethod' not found.",
                          ex.Message);
         }
 

@@ -144,7 +144,7 @@ namespace NoWoL.TestingUtilities
 
                     if (!rule.Evaluate(param.Name, result?.InnerException, out string additionalReason))
                     {
-                        throw new Exception($"Rule '{rule.Name}' for parameter '{param.Name}' was not respected. {additionalReason}");
+                        throw ArgumentRuleException.Create(rule.Name, param.Name, additionalReason);
                     }
                 }
             }
@@ -199,7 +199,7 @@ namespace NoWoL.TestingUtilities
 
                     if (!rule.Evaluate(param.Name, result, out string additionalReason))
                     {
-                        throw new Exception($"Rule '{rule.Name}' for parameter '{param.Name}' was not respected. {additionalReason}");
+                        throw ArgumentRuleException.Create(rule.Name, param.Name, additionalReason);
                     }
                 }
             }
@@ -251,7 +251,7 @@ namespace NoWoL.TestingUtilities
 
             if (missingParameters.Count > 0)
             {
-                throw new InvalidOperationException($"The following parameters have not been configured: {String.Join(", ", missingParameters)}");
+                throw UnconfiguredArgumentsException.Create(missingParameters);
             }
         }
 
@@ -264,7 +264,7 @@ namespace NoWoL.TestingUtilities
                 bool handled = CreatorHelpers.TryCreateObject(parameterInfo.ParameterType, _objectCreators, out var createdObject);
                 if (!handled)
                 {
-                    throw new Exception("Could not find an IObjectCreator for " + parameterInfo.ParameterType.FullName);
+                    throw  new Exception("Could not find an IObjectCreator for " + parameterInfo.ParameterType.FullName);
                 }
                 else
                 {

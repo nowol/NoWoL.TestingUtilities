@@ -48,8 +48,8 @@ namespace NoWoL.TestingUtilities.Tests.ObjectCreators
         [InlineData(typeof(double))]
         public void CreateThrowsExceptionUnhandledTypes(Type type)
         {
-            var ex = Assert.Throws<NotSupportedException>(() => _sut.Create(type,
-                                                                            null));
+            var ex = Assert.Throws<UnsupportedTypeException>(() => _sut.Create(type,
+                                                                               null));
 #pragma warning disable CA1062 // Validate arguments of public methods
             Assert.Equal("Expecting an interface however received " + type.FullName, ex.Message);
 #pragma warning restore CA1062 // Validate arguments of public methods

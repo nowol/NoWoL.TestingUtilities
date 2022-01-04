@@ -63,7 +63,7 @@ namespace NoWoL.TestingUtilities.Tests.ObjectCreators
         [InlineData(typeof(ISomeInterface))]
         public void CreateThrowsExceptionUnhandledTypes(Type type)
         {
-            var ex = Assert.Throws<NotSupportedException>(() => _sut.Create(type,
+            var ex = Assert.Throws<UnsupportedTypeException>(() => _sut.Create(type,
                                                                             ArgumentsValidatorHelper.DefaultCreators));
 #pragma warning disable CA1062 // Validate arguments of public methods
             Assert.Equal("Expecting an array type however received " + type.FullName, ex.Message);

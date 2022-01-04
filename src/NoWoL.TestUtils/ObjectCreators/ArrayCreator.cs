@@ -45,8 +45,8 @@ namespace NoWoL.TestingUtilities.ObjectCreators
             {
                 return CreatorHelpers.CreateArray(type.GetElementType(), objectCreators);
             }
-
-            throw new NotSupportedException("Expecting an array type however received " + type.FullName);
+            
+            throw new UnsupportedTypeException("Expecting an array type however received " + type.FullName);
         }
     }
 }
