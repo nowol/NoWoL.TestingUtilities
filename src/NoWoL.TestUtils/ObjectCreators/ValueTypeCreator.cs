@@ -48,7 +48,7 @@ namespace NoWoL.TestingUtilities.ObjectCreators
                 return type.GetDefault();
             }
 
-            throw new NotSupportedException("Expecting a string or value type however received " + type.FullName);
+            throw new UnsupportedTypeException("Expecting a string or value type however received " + type.FullName);
         }
     }
 }

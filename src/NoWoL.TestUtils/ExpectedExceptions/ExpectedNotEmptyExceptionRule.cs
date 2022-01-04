@@ -97,7 +97,7 @@ namespace NoWoL.TestingUtilities.ExpectedExceptions
                 }
             }
 
-            throw new NotSupportedException("Unknown type: " + parameterInfo.ParameterType.FullName);
+            throw UnsupportedInvalidTypeException.Create(parameterInfo.ParameterType);
         }
     }
 }

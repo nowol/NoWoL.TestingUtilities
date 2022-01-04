@@ -47,7 +47,7 @@ namespace NoWoL.TestingUtilities.ObjectCreators
                 return CreatorHelpers.CreateArray(itemType, objectCreators);
             }
 
-            throw new NotSupportedException("Expecting an IEnumerable<> type however received " + type.FullName);
+            throw new UnsupportedTypeException("Expecting an IEnumerable<> type however received " + type.FullName);
         }
     }
 }

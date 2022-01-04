@@ -134,7 +134,7 @@ namespace NoWoL.TestingUtilities
             
             if (targetObject != null && method.DeclaringType != targetObject.GetType())
             {
-                throw new InvalidOperationException($"The specified method '{method.Name}' is not available on the targeted object ({targetObject.GetType()}).");
+                throw new MissingMethodException(targetObject.GetType().FullName, method.Name);
             }
 
             var creators = objectCreators?.ToArray();

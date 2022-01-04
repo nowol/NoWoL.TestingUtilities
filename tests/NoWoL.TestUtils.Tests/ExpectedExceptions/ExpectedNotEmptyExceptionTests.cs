@@ -64,8 +64,8 @@ namespace NoWoL.TestingUtilities.Tests.ExpectedExceptions
                "Unit")]
         public void GetInvalidParameterValueForUnknownType()
         {
-            var ex = Assert.Throws<NotSupportedException>(() => _sut.GetInvalidParameterValue(MethodsHolder.GetIntParameterInfo(), null));
-            Assert.Equal("Unknown type: System.Int32",
+            var ex = Assert.Throws<UnsupportedInvalidTypeException>(() => _sut.GetInvalidParameterValue(MethodsHolder.GetIntParameterInfo(), null));
+            Assert.Equal("Unable to generate an invalid value for type 'System.Int32'.",
                          ex.Message);
         }
 
@@ -74,8 +74,8 @@ namespace NoWoL.TestingUtilities.Tests.ExpectedExceptions
                "Unit")]
         public void GetInvalidParameterValueForUnknownGenericType()
         {
-            var ex = Assert.Throws<NotSupportedException>(() => _sut.GetInvalidParameterValue(MethodsHolder.GetActionParameterInfo(), null));
-            Assert.StartsWith("Unknown type: System.Action",
+            var ex = Assert.Throws<UnsupportedInvalidTypeException>(() => _sut.GetInvalidParameterValue(MethodsHolder.GetActionParameterInfo(), null));
+            Assert.StartsWith("Unable to generate an invalid value for type 'System.Action",
                               ex.Message, 
                               StringComparison.Ordinal);
         }

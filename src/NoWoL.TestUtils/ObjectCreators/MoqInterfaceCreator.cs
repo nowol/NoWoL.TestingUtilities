@@ -42,7 +42,7 @@ namespace NoWoL.TestingUtilities.ObjectCreators
 				return type.GetObjectMock(MockBehavior.Loose);
 			}
 
-            throw new NotSupportedException("Expecting an interface however received " + type.FullName);
+            throw new UnsupportedTypeException("Expecting an interface however received " + type.FullName);
 		}
 	}
 }

@@ -47,7 +47,7 @@ namespace NoWoL.TestingUtilities.ObjectCreators
                 return CreatorHelpers.CreateList(itemType, objectCreators);
             }
 
-            throw new NotSupportedException("Expecting an ICollection<> type however received " + type.FullName);
+            throw new UnsupportedTypeException("Expecting an ICollection<> type however received " + type.FullName);
         }
     }
 }

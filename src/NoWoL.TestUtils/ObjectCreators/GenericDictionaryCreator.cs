@@ -69,7 +69,7 @@ namespace NoWoL.TestingUtilities.ObjectCreators
                 return dict;
             }
 
-            throw new NotSupportedException("Expecting a Dictionary type however received " + type.FullName);
+            throw new UnsupportedTypeException("Expecting a Dictionary type however received " + type.FullName);
         }
 
         internal static object CreateDictionaryFromType(Type type)

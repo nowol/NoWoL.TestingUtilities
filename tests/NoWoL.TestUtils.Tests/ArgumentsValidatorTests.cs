@@ -106,9 +106,9 @@ namespace NoWoL.TestingUtilities.Tests
             sut.SetupParameter("param1",
                                new ExpectedNoExceptionRule());
 
-            var ex = Assert.Throws<InvalidOperationException>(() => sut.Validate());
+            var ex = Assert.Throws<UnconfiguredArgumentsException>(() => sut.Validate());
 
-            Assert.Equal("The following parameters have not been configured: param2, param3, param4, param5",
+            Assert.Equal("The following arguments have not been configured: param2, param3, param4, param5.",
                          ex.Message);
         }
 
@@ -160,7 +160,7 @@ namespace NoWoL.TestingUtilities.Tests
                                ExpectedExceptionRules.NotNull,
                                ExpectedExceptionRules.NotEmptyOrWhiteSpace);
 
-            var ex = Assert.Throws<Exception>(() => sut.Validate());
+            var ex = Assert.Throws<ArgumentRuleException>(() => sut.Validate());
 
             Assert.Equal("Rule 'ExpectedNotNullExceptionRule' for parameter 'paramW' was not respected. An exception was expected but none happened.",
                          ex.Message);
@@ -221,8 +221,8 @@ namespace NoWoL.TestingUtilities.Tests
             var sut = new ArgumentsValidator(new SimpleTestClass(), method, parameters,
                                              ArgumentsValidatorHelper.DefaultCreators);
 
-            var ex = await Assert.ThrowsAsync<Exception>(() => sut.SetupParameter("param1", ExpectedExceptionRules.None)
-                                                                  .ValidateAsync()).ConfigureAwait(false);
+            var ex = await Assert.ThrowsAsync<ArgumentRuleException>(() => sut.SetupParameter("param1", ExpectedExceptionRules.None)
+                                                                              .ValidateAsync()).ConfigureAwait(false);
 
             Assert.StartsWith("Rule 'ExpectedNoExceptionRule' for parameter 'param1' was not respected. An exception was thrown when no exception was expected",
                               ex.Message,
@@ -350,7 +350,7 @@ namespace NoWoL.TestingUtilities.Tests
                                ExpectedExceptionRules.NotNull,
                                ExpectedExceptionRules.NotEmptyOrWhiteSpace);
 
-            var ex = await Assert.ThrowsAsync<Exception>(() => sut.ValidateAsync()).ConfigureAwait(false);
+            var ex = await Assert.ThrowsAsync<ArgumentRuleException>(() => sut.ValidateAsync()).ConfigureAwait(false);
 
             Assert.Equal("Rule 'ExpectedNotNullExceptionRule' for parameter 'paramW' was not respected. An exception was expected but none happened.",
                          ex.Message);
