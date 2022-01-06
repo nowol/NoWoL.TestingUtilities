@@ -10,9 +10,9 @@ using NoWoL.TestingUtilities.ObjectCreators;
 namespace NoWoL.TestingUtilities
 {
     /// <summary>
-    /// Helper class to create an instance of <see cref="ArgumentsValidator"/>
+    /// Helper class to create an instance of <see cref="ParametersValidator"/>
     /// </summary>
-    public static class ArgumentsValidatorHelper
+    public static class ParametersValidatorHelper
     {
         /// <summary>
         /// Gets the default object creators
@@ -29,41 +29,41 @@ namespace NoWoL.TestingUtilities
                                                                   };
 
         /// <summary>
-        /// Creates an instance of <see cref="ArgumentsValidator"/> for the constructor of type <typeparamref name="TConstructor"/>.
+        /// Creates an instance of <see cref="ParametersValidator"/> for the constructor of type <typeparamref name="TConstructor"/>.
         /// </summary>
         /// <typeparam name="TConstructor">Type to validate</typeparam>
-        /// <returns>An instance of <see cref="ArgumentsValidator"/></returns>
-        public static ArgumentsValidator GetConstructorArgumentsValidator<TConstructor>()
+        /// <returns>An instance of <see cref="ParametersValidator"/></returns>
+        public static ParametersValidator GetConstructorParametersValidator<TConstructor>()
             where TConstructor : class
         {
             var constructor = GetSinglePublicConstructor<TConstructor>();
 
-            return GetMethodArgumentsValidator(null, constructor, null);
+            return GetMethodParametersValidator(null, constructor, null);
         }
 
         /// <summary>
-        /// Creates an instance of <see cref="ArgumentsValidator"/> for the constructor of type <typeparamref name="TConstructor"/>.
+        /// Creates an instance of <see cref="ParametersValidator"/> for the constructor of type <typeparamref name="TConstructor"/>.
         /// </summary>
-        /// <param name="constructorArguments">Optional arguments used for testing</param>
+        /// <param name="constructorParameters">Optional values used for testing as arguments to the constructor</param>
         /// <typeparam name="TConstructor">Type to validate</typeparam>
-        /// <returns>An instance of <see cref="ArgumentsValidator"/></returns>
-        public static ArgumentsValidator GetConstructorArgumentsValidator<TConstructor>(object[] constructorArguments)
+        /// <returns>An instance of <see cref="ParametersValidator"/></returns>
+        public static ParametersValidator GetConstructorParametersValidator<TConstructor>(object[] constructorParameters)
             where TConstructor : class
         {
             var constructor = GetSinglePublicConstructor<TConstructor>();
 
-            return GetConstructorArgumentsValidator(constructor, constructorArguments);
+            return GetConstructorParametersValidator(constructor, constructorParameters);
         }
 
         /// <summary>
-        /// Creates an instance of <see cref="ArgumentsValidator"/> for the specified ConstructorInfo
+        /// Creates an instance of <see cref="ParametersValidator"/> for the specified ConstructorInfo
         /// </summary>
         /// <param name="constructor">Constructor to test</param>
-        /// <param name="constructorArguments">Optional arguments used for testing</param>
-        /// <returns>An instance of <see cref="ArgumentsValidator"/></returns>
-        public static ArgumentsValidator GetConstructorArgumentsValidator(ConstructorInfo constructor, object[] constructorArguments)
+        /// <param name="constructorParameters">Optional values used for testing as arguments to the constructor</param>
+        /// <returns>An instance of <see cref="ParametersValidator"/></returns>
+        public static ParametersValidator GetConstructorParametersValidator(ConstructorInfo constructor, object[] constructorParameters)
         {
-            return GetMethodArgumentsValidator(null, constructor, constructorArguments);
+            return GetMethodParametersValidator(null, constructor, constructorParameters);
         }
 
         private static ConstructorInfo GetSinglePublicConstructor<TConstructor>()
@@ -89,14 +89,14 @@ namespace NoWoL.TestingUtilities
         }
 
         /// <summary>
-        /// Creates an instance of <see cref="ArgumentsValidator"/> for the method <paramref name="methodName"/> of <paramref name="targetObject"/>
+        /// Creates an instance of <see cref="ParametersValidator"/> for the method <paramref name="methodName"/> of <paramref name="targetObject"/>
         /// </summary>
         /// <param name="targetObject">Object to test</param>
         /// <param name="methodName">Name of the method to test</param>
-        /// <param name="methodArguments">Optional arguments used for testing</param>
+        /// <param name="methodParameters">Optional values used for testing as arguments for the method</param>
         /// <param name="objectCreators">Optional object creators used to create types during testing</param>
-        /// <returns>An instance of <see cref="ArgumentsValidator"/></returns>
-        public static ArgumentsValidator GetMethodArgumentsValidator(object targetObject, string methodName, object[] methodArguments = null, IEnumerable<IObjectCreator> objectCreators = null)
+        /// <returns>An instance of <see cref="ParametersValidator"/></returns>
+        public static ParametersValidator GetMethodParametersValidator(object targetObject, string methodName, object[] methodParameters = null, IEnumerable<IObjectCreator> objectCreators = null)
         {
             if (targetObject == null)
             {
@@ -113,19 +113,19 @@ namespace NoWoL.TestingUtilities
                 throw new ArgumentException($"Cannot find method with name '{methodName}' on type '{targetObject.GetType().FullName}'", nameof(methodName));
             }
 
-            return new ArgumentsValidator(targetObject, method, methodArguments,
+            return new ParametersValidator(targetObject, method, methodParameters,
                                           creators ?? DefaultCreators);
         }
 
         /// <summary>
-        /// Creates an instance of <see cref="ArgumentsValidator"/> for the method <paramref name="method"/>
+        /// Creates an instance of <see cref="ParametersValidator"/> for the method <paramref name="method"/>
         /// </summary>
         /// <param name="targetObject">Object to test. Can be null if testing a static method.</param>
         /// <param name="method">Method to test</param>
-        /// <param name="methodArguments">Optional arguments used for testing</param>
+        /// <param name="methodParameters">Optional values used for testing as arguments for the method</param>
         /// <param name="objectCreators">Optional object creators used to create types during testing</param>
-        /// <returns>An instance of <see cref="ArgumentsValidator"/></returns>
-        public static ArgumentsValidator GetMethodArgumentsValidator(object targetObject, MethodBase method, object[] methodArguments = null, IEnumerable<IObjectCreator> objectCreators = null)
+        /// <returns>An instance of <see cref="ParametersValidator"/></returns>
+        public static ParametersValidator GetMethodParametersValidator(object targetObject, MethodBase method, object[] methodParameters = null, IEnumerable<IObjectCreator> objectCreators = null)
         {
             if (method == null)
             {
@@ -141,7 +141,7 @@ namespace NoWoL.TestingUtilities
 
             ValidateObjectCreators(creators);
             
-            return new ArgumentsValidator(targetObject, method, methodArguments,
+            return new ParametersValidator(targetObject, method, methodParameters,
                                           creators ?? DefaultCreators);
         }
 
@@ -155,17 +155,17 @@ namespace NoWoL.TestingUtilities
         }
 
         /// <summary>
-        /// Creates an instance of <see cref="ArgumentsValidator"/> for the expression.
+        /// Creates an instance of <see cref="ParametersValidator"/> for the expression.
         /// <remarks>This is currently experimental</remarks>
         /// </summary>
         /// <typeparam name="T">Type of the object to test</typeparam>
         /// <param name="targetObject">Object to test</param>
         /// <param name="objectCreators">Optional object creators used to create types during testing</param>
         /// <returns></returns>
-        public static ExpressionArgumentsValidator<T> GetExpressionArgumentsValidator<T>(T targetObject, IEnumerable<IObjectCreator> objectCreators = null)
+        public static ExpressionParametersValidator<T> GetExpressionParametersValidator<T>(T targetObject, IEnumerable<IObjectCreator> objectCreators = null)
             where T : class
         {
-            return new ExpressionArgumentsValidator<T>(targetObject, objectCreators);
+            return new ExpressionParametersValidator<T>(targetObject, objectCreators);
         }
     }
 }

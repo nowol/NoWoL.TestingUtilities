@@ -11,7 +11,7 @@ using NoWoL.TestingUtilities.Exceptions;
 #pragma warning disable IDE0079 // Remove unnecessary suppression
 
 <#
-CreateException("NoWoL.TestingUtilities.ArgumentRuleException", standardMessage: "Rule '{string ruleName}' for parameter '{string paramName}' was not respected.{<AddSpaceWhenRequired>string additionalReason}");
+CreateException("NoWoL.TestingUtilities.ParameterRuleException", standardMessage: "Rule '{string ruleName}' for parameter '{string paramName}' was not respected.{<AddSpaceWhenRequired>string additionalReason}");
 CreateException("NoWoL.TestingUtilities.UnconfiguredArgumentsException", standardMessage: "The following arguments have not been configured: {<JoinComma>System.Collections.Generic.IEnumerable<string> missingArguments}.");
 CreateException("NoWoL.TestingUtilities.MissingObjectCreatorException", standardMessage: "Could not find an IObjectCreator for {<TypeFullName>Type type}.");
 CreateException("NoWoL.TestingUtilities.UnsupportedInvalidTypeException", standardMessage: "Unable to generate an invalid value for type '{<TypeFullName>Type type}'.");

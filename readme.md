@@ -15,7 +15,7 @@ You can install the `NoWoL.TestingUtilities` packages using your favorite Nuget 
 
 ## Usage
 
-Before you can test the input arguments of a method or constructor you need to acquire an `ArgumentsValidator`. The library provides a helper class called `ArgumentsValidatorHelper` to help with the validator creation. Once you have your validator you will need to configure every parameters using the `SetupParameter` method and then call `Validate` to test the parameters.
+Before you can test the input parameters of a method or constructor you need to acquire a `ParametersValidator`. The library provides a helper class called `ParametersValidatorHelper` to help with the validator creation. Once you have your validator you will need to configure every parameters using the `SetupParameter` method and then call `Validate` to test the parameters.
 
 ```csharp
 // the sample code below will use the following class definition 
@@ -37,14 +37,14 @@ public class TestClass
 }
 
 // Validates the constructor's parameters
-var validator = ArgumentsValidatorHelper.GetConstructorArgumentsValidator<TestClass>();
+var validator = ParametersValidatorHelper.GetConstructorParametersValidator<TestClass>();
 validator.SetupParameter("param1", ExpectedExceptionRules.NotNull, ExpectedExceptionRules.ExpectedNotEmptyOrWhiteSpaceException) // validates that the string is not null, empty or only white spaces
          .SetupParameter("param2", ExpectedExceptionRules.NotNull, ExpectedExceptionRules.NotEmpty) // validates that the list is not null and not empty
          .Validate();
 
 // Validates the method's parameters
 var obj = new TestClass();
-var validator = ArgumentsValidatorHelper.GetMethodArgumentsValidator(obj, nameof(TestClass.MyMethod));
+var validator = ParametersValidatorHelper.GetMethodParametersValidator(obj, nameof(TestClass.MyMethod));
 validator.SetupParameter("param1", ExpectedExceptionRules.None) // validates that no exception are thrown for the parameter
          .SetupParameter("param2", ExpectedExceptionRules.NotNull, ExpectedExceptionRules.NotEmpty)
          .Validate();
@@ -58,7 +58,7 @@ You can use a LINQ expression to avoid using magic strings for the name of the p
 
 ```csharp
 var obj = new TestClass();
-var validator = ArgumentsValidatorHelper.GetExpressionArgumentsValidator(obj);
+var validator = ParametersValidatorHelper.GetExpressionParametersValidator(obj);
 validator.Setup(x => x.MyMethod(validator.For<string>(ExpectedExceptionRules.None),
                                 validator.For<List<int>>(ExpectedExceptionRules.NotNull, ExpectedExceptionRules.NotEmpty)))
          .Validate();
@@ -70,8 +70,8 @@ Configuring every parameters manually can be quite a chore. You can use the `Set
 
 ```csharp
 var obj = new TestClass();
-var validator = ArgumentsValidatorHelper.GetMethodArgumentsValidator(obj, nameof(TestClass.MyMethod));
-validator.SetupAll(ArgumentsValidator.DefaultRules) // The default rules are the predefined validation rules for the most common validations. You can define you own rules if the defaults do not work for you.
+var validator = ParametersValidatorHelper.GetMethodParametersValidator(obj, nameof(TestClass.MyMethod));
+validator.SetupAll(ParametersValidator.DefaultRules) // The default rules are the predefined validation rules for the most common validations. You can define you own rules if the defaults do not work for you.
          .UpdateParameter("param1", ExpectedExceptionRules.NotValue("Freddie")) // You can call SetupAll to configure every parameters with the default rules and then use UpdateParameter to update any parameters which the default rules are not applicable
          .Validate();
 ```
@@ -108,10 +108,10 @@ public class TestClassObjectCreator : IObjectCreator
 // You will need to create a new collection of object creators for your validator:
 var creators = new List<IObjectCreator>();
 creators.Add(new TestClassObjectCreator()); // you should add your object creators before the default ones
-creators.AddRange(ArgumentsValidatorHelper.DefaultCreators); // add the default creators
-var validator = ArgumentsValidatorHelper.GetMethodArgumentsValidator(obj, 
-                                                                     nameof(AnotherClass.AnotherMethod), 
-                                                                     objectCreators: creators);
+creators.AddRange(ParametersValidatorHelper.DefaultCreators); // add the default creators
+var validator = ParametersValidatorHelper.GetMethodParametersValidator(obj, 
+                                                                       nameof(AnotherClass.AnotherMethod), 
+                                                                       objectCreators: creators);
 ```
 
 To avoid creating too many one-off object creators you can simply create the test values yourself and pass them to the validator.
@@ -123,9 +123,9 @@ var values = new object[]
                  new List<int> { 3 },
                  ...
              };
-var validator = ArgumentsValidatorHelper.GetMethodArgumentsValidator(obj, 
-                                                                     nameof(AnotherClass.AnotherMethod), 
-                                                                     methodArguments: values);
+var validator = ParametersValidatorHelper.GetMethodParametersValidator(obj, 
+                                                                       nameof(AnotherClass.AnotherMethod), 
+                                                                       methodParameters: values);
 ...
 ```
 
@@ -133,7 +133,7 @@ var validator = ArgumentsValidatorHelper.GetMethodArgumentsValidator(obj,
 
 The library comes with the most common validation rules for no exception, not empty, not empty or white-space, not null and specific invalid value. The `ExpectedExceptionRules` class holds instances of these rules.
 
-You can create your own validation rule by inheriting from `IExpectedException`. This class provides 2 main methods: `Evaluate` which is used to analyze an exception that was thrown (if any) and `GetInvalidParameterValue` which is used to generate and invalid value used as input for the method under test.
+You can create your own validation rule by inheriting from `IExpectedException`. This interface provides 2 main methods: `Evaluate` which is used to analyze an exception that was thrown (if any) and `GetInvalidParameterValue` which is used to generate and invalid value used as input for the method under test.
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.

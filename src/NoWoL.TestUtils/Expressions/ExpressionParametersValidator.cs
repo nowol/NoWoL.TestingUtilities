@@ -5,10 +5,10 @@ using System.Linq.Expressions;
 namespace NoWoL.TestingUtilities.Expressions
 {
     /// <summary>
-    /// This class will produce an <see cref="ArgumentsValidator"/> from an expression
+    /// This class will produce an <see cref="ParametersValidator"/> from an expression
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class ExpressionArgumentsValidator<T>
+    public class ExpressionParametersValidator<T>
         where T: class
     {
         private readonly T _targetObject;
@@ -16,11 +16,11 @@ namespace NoWoL.TestingUtilities.Expressions
         private readonly List<IExpectedExceptionRule[]> _parameterRules = new();
 
         /// <summary>
-        /// Creates an instance of the <see cref="ExpressionArgumentsValidator{T}"/> class.
+        /// Creates an instance of the <see cref="ExpressionParametersValidator{T}"/> class.
         /// </summary>
         /// <param name="targetObject">Object to test</param>
         /// <param name="objectCreators">Optional object creators used to create types during testing</param>
-        public ExpressionArgumentsValidator(T targetObject, IEnumerable<IObjectCreator> objectCreators)
+        public ExpressionParametersValidator(T targetObject, IEnumerable<IObjectCreator> objectCreators)
         {
             _targetObject = targetObject ?? throw new ArgumentNullException(nameof(targetObject));
             _objectCreators = objectCreators;
@@ -51,17 +51,17 @@ namespace NoWoL.TestingUtilities.Expressions
         }
 
         /// <summary>
-        /// Create an <see cref="ArgumentsValidator"/> for the method specified by the expression
+        /// Create an <see cref="ParametersValidator"/> for the method specified by the expression
         /// </summary>
         /// <typeparam name="TResult">Return type of the method</typeparam>
         /// <param name="expr">Expression to validate</param>
-        /// <returns>A configured instance of <see cref="ArgumentsValidator"/> that you can call Validate/ValidateAsync on.</returns>
-        public ArgumentsValidator Setup<TResult>(Expression<Func<T, TResult>> expr)
+        /// <returns>A configured instance of <see cref="ParametersValidator"/> that you can call Validate/ValidateAsync on.</returns>
+        public ParametersValidator Setup<TResult>(Expression<Func<T, TResult>> expr)
         {
             var analyzer = new ExpressionArgumentsAnalyzer();
             var expInfo = analyzer.Analyze(expr);
 
-            var validator = ArgumentsValidatorHelper.GetMethodArgumentsValidator(_targetObject,
+            var validator = ParametersValidatorHelper.GetMethodParametersValidator(_targetObject,
                                                                                  expInfo.Method,
                                                                                  objectCreators: _objectCreators);
 

@@ -85,7 +85,7 @@ namespace NoWoL.TestingUtilities.Tests.ExpectedExceptions
                "Unit")]
         public void GetInvalidParameterValueThrowIfInputParametersAreInvalid()
         {
-            var validator = ArgumentsValidatorHelper.GetMethodArgumentsValidator(new ExpectedNotEmptyExceptionRule(), nameof(ExpectedNotEmptyExceptionRule.GetInvalidParameterValue), methodArguments: new object[] { MethodsHolder.GetStringParameterInfo(), null });
+            var validator = ParametersValidatorHelper.GetMethodParametersValidator(new ExpectedNotEmptyExceptionRule(), nameof(ExpectedNotEmptyExceptionRule.GetInvalidParameterValue), methodParameters: new object[] { MethodsHolder.GetStringParameterInfo(), null });
 
             validator.SetupParameter("parameterInfo", ExpectedExceptionRules.NotNull)
                      .SetupParameter("defaultValue", ExpectedExceptionRules.None)

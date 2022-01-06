@@ -9,25 +9,25 @@ using NoWoL.TestingUtilities.ObjectCreators;
 namespace NoWoL.TestingUtilities
 {
     /// <summary>
-    /// Validates the arguments of a method or constructor
+    /// Validates the parameters of a method or constructor
     /// </summary>
-    public class ArgumentsValidator
+    public class ParametersValidator
     {
         private readonly object _targetObject;
         private readonly MethodBase _method;
         private readonly IObjectCreator[] _objectCreators;
-        private readonly object[] _methodArguments;
+        private readonly object[] _methodParameters;
         private readonly Dictionary<string, IExpectedExceptionRule[]> _expectedExceptions = new();
         private readonly ParameterInfo[] _parameters;
 
         /// <summary>
-        /// Creates an instance of the <see cref="ArgumentsValidator"/> class.
+        /// Creates an instance of the <see cref="ParametersValidator"/> class.
         /// </summary>
         /// <param name="targetObject">Object to test. Can be null if testing a static method.</param>
         /// <param name="method">Method to test</param>
-        /// <param name="methodArguments">Optional arguments used for testing</param>
+        /// <param name="methodParameters">Optional values used for testing as arguments for the method</param>
         /// <param name="objectCreators">Optional object creators used to create types during testing</param>
-        public ArgumentsValidator(object targetObject, MethodBase method, object[] methodArguments, IObjectCreator[] objectCreators)
+        public ParametersValidator(object targetObject, MethodBase method, object[] methodParameters, IObjectCreator[] objectCreators)
         {
 #pragma warning disable IDE0016 // Use 'throw' expression
             if (method == null)
@@ -50,7 +50,7 @@ namespace NoWoL.TestingUtilities
             _targetObject = targetObject;
             _method = method;
             _objectCreators = objectCreators;
-            _methodArguments = methodArguments;
+            _methodParameters = methodParameters;
 
             _parameters = _method.GetParameters();
 
@@ -68,11 +68,11 @@ namespace NoWoL.TestingUtilities
         /// Everything else will use NotNull
         /// </remarks>
         /// </summary>
-        public static IArgumentsValidationRules DefaultRules { get; } = GetDefaultRules();
+        public static IParametersValidationRules DefaultRules { get; } = GetDefaultRules();
 
-        private static IArgumentsValidationRules GetDefaultRules()
+        private static IParametersValidationRules GetDefaultRules()
         {
-            return new ArgumentsValidationRules
+            return new ParametersValidationRules
                    {
                        StringRules = new []{ ExpectedExceptionRules.NotNull, ExpectedExceptionRules.NotEmptyOrWhiteSpace },
                        ValueTypesRules = new []{ ExpectedExceptionRules.None },
@@ -85,37 +85,13 @@ namespace NoWoL.TestingUtilities
         /// <summary>
         /// Configures the validation rules for a named parameter
         /// </summary>
-        /// <param name="paramName">Parameter to validate</param>
+        /// <param name="paramName">Name of the parameter to validate</param>
         /// <param name="rules">Validation rules</param>
-        /// <returns>This instance of <see cref="ArgumentsValidator"/> to allow chaining.</returns>
-        public ArgumentsValidator SetupParameter(string paramName, params IExpectedExceptionRule[] rules)
+        /// <returns>This instance of <see cref="ParametersValidator"/> to allow chaining.</returns>
+        public ParametersValidator SetupParameter(string paramName, params IExpectedExceptionRule[] rules)
         {
-            if (paramName == null)
-            {
-                throw new ArgumentNullException(nameof(paramName));
-            }
-
-            if (string.IsNullOrWhiteSpace(paramName))
-            {
-                throw new ArgumentException("Value cannot be null or whitespace.",
-                                            nameof(paramName));
-            }
-
-            if (!_parameters.Any(x => String.Equals(x.Name, paramName, StringComparison.Ordinal)))
-            {
-                throw new ArgumentException($"Parameter '{paramName}' does not exists on the method.", nameof(paramName));
-            }
-
-            if (rules == null)
-            {
-                throw new ArgumentNullException(nameof(rules));
-            }
-
-            if (rules.Length == 0)
-            {
-                throw new ArgumentException("Value cannot be an empty collection.",
-                                            nameof(rules));
-            }
+            ValidateParameterNameAndRules(paramName,
+                                          rules);
 
             if (_expectedExceptions.ContainsKey(paramName))
             {
@@ -130,10 +106,25 @@ namespace NoWoL.TestingUtilities
         /// <summary>
         /// Update the validation rules for a named parameter
         /// </summary>
-        /// <param name="paramName">Parameter to validate</param>
+        /// <param name="paramName">Name of the parameter to validate</param>
         /// <param name="rules">Validation rules</param>
-        /// <returns>This instance of <see cref="ArgumentsValidator"/> to allow chaining.</returns>
-        public ArgumentsValidator UpdateParameter(string paramName, params IExpectedExceptionRule[] rules)
+        /// <returns>This instance of <see cref="ParametersValidator"/> to allow chaining.</returns>
+        public ParametersValidator UpdateParameter(string paramName, params IExpectedExceptionRule[] rules)
+        {
+            ValidateParameterNameAndRules(paramName,
+                                          rules);
+
+            if (!_expectedExceptions.ContainsKey(paramName))
+            {
+                throw new KeyNotFoundException($"The given key '{paramName}' was not present in the dictionary.");
+            }
+
+            _expectedExceptions[paramName] = rules;
+
+            return this;
+        }
+
+        private void ValidateParameterNameAndRules(string paramName, IExpectedExceptionRule[] rules)
         {
             if (paramName == null)
             {
@@ -146,9 +137,12 @@ namespace NoWoL.TestingUtilities
                                             nameof(paramName));
             }
 
-            if (!_parameters.Any(x => String.Equals(x.Name, paramName, StringComparison.Ordinal)))
+            if (!_parameters.Any(x => String.Equals(x.Name,
+                                                    paramName,
+                                                    StringComparison.Ordinal)))
             {
-                throw new ArgumentException($"Parameter '{paramName}' does not exists on the method.", nameof(paramName));
+                throw new ArgumentException($"Parameter '{paramName}' does not exists on the method.",
+                                            nameof(paramName));
             }
 
             if (rules == null)
@@ -161,19 +155,10 @@ namespace NoWoL.TestingUtilities
                 throw new ArgumentException("Value cannot be an empty collection.",
                                             nameof(rules));
             }
-
-            if (!_expectedExceptions.ContainsKey(paramName))
-            {
-                throw new KeyNotFoundException($"The given key '{paramName}' was not present in the dictionary.");
-            }
-
-            _expectedExceptions[paramName] = rules;
-
-            return this;
         }
 
         /// <summary>
-        /// Get the parameter rules
+        /// Get the rules of a parameter
         /// </summary>
         /// <param name="paramName">Name of the parameter</param>
         /// <returns>Rules of the parameter</returns>
@@ -201,7 +186,7 @@ namespace NoWoL.TestingUtilities
             ValidateConfiguredExceptions();
             ValidateMissingParameters();
 
-            object[] defaultParameters = GetDefaultParameters();
+            object[] defaultArguments = GetDefaultArguments();
 
             for (var i = 0; i < _parameters.Length; i++)
             {
@@ -210,7 +195,7 @@ namespace NoWoL.TestingUtilities
 
                 foreach (var rule in rules)
                 {
-                    var arguments = defaultParameters.ToArray(); // copy array to avoid recreating the default parameters every time
+                    var arguments = defaultArguments.ToArray(); // copy array to avoid recreating the default arguments every time
                     arguments[i] = rule.GetInvalidParameterValue(param, arguments[i]);
 
                     TargetInvocationException result = null;
@@ -234,7 +219,7 @@ namespace NoWoL.TestingUtilities
 
                     if (!rule.Evaluate(param.Name, result?.InnerException, out string additionalReason))
                     {
-                        throw ArgumentRuleException.Create(rule.Name, param.Name, additionalReason);
+                        throw ParameterRuleException.Create(rule.Name, param.Name, additionalReason);
                     }
                 }
             }
@@ -248,7 +233,7 @@ namespace NoWoL.TestingUtilities
             ValidateConfiguredExceptions();
             ValidateMissingParameters();
 
-            object[] defaultParameters = GetDefaultParameters();
+            object[] defaultArguments = GetDefaultArguments();
 
             for (var i = 0; i < _parameters.Length; i++)
             {
@@ -257,11 +242,11 @@ namespace NoWoL.TestingUtilities
 
                 foreach (var rule in rules)
                 {
-                    var arguments = defaultParameters.ToArray(); // copy array to avoid recreating the default parameters every time
+                    var arguments = defaultArguments.ToArray(); // copy array to avoid recreating the default arguments every time
                     arguments[i] = rule.GetInvalidParameterValue(param, arguments[i]);
 
                     Exception result = null;
-                    bool nonAsyncWasCalled = false;
+                    bool exceptionWasHandled = false;
 
                     try
                     {
@@ -269,7 +254,7 @@ namespace NoWoL.TestingUtilities
 
                         if (_method is not MethodInfo mi)
                         {
-                            nonAsyncWasCalled = true;
+                            exceptionWasHandled = true;
                             throw new NotSupportedException("The requested method is not compatible with async/await. Please call the non async Validate method.");
                         }
 
@@ -277,20 +262,20 @@ namespace NoWoL.TestingUtilities
                                                  arguments,
                                                  out var task))
                         {
-                            nonAsyncWasCalled = true;
+                            exceptionWasHandled = true;
                             throw new NotSupportedException("The requested method does not return a Task. Please call the non async Validate method.");
                         }
 
                         await task.ConfigureAwait(false);
                     }
-                    catch (Exception ex) when (!nonAsyncWasCalled)
+                    catch (Exception ex) when (!exceptionWasHandled)
                     {
                         result = ex;
                     }
 
                     if (!rule.Evaluate(param.Name, result, out string additionalReason))
                     {
-                        throw ArgumentRuleException.Create(rule.Name, param.Name, additionalReason);
+                        throw ParameterRuleException.Create(rule.Name, param.Name, additionalReason);
                     }
                 }
             }
@@ -331,16 +316,16 @@ namespace NoWoL.TestingUtilities
             return false;
         }
 
-        private object[] GetDefaultParameters()
+        private object[] GetDefaultArguments()
         {
-            return _methodArguments ?? CreateDefaultParameters();
+            return _methodParameters ?? CreateDefaultArguments();
         }
 
         private void ValidateConfiguredExceptions()
         {
             if (_expectedExceptions.Count == 0)
             {
-                throw new InvalidOperationException("No arguments were configured for validation. Call SetupAll or SetupParameter before calling Validate/ValidateAsync.");
+                throw new InvalidOperationException("No parameters were configured for validation. Call SetupAll or SetupParameter before calling Validate/ValidateAsync.");
             }
         }
 
@@ -354,7 +339,7 @@ namespace NoWoL.TestingUtilities
             }
         }
 
-        private object[] CreateDefaultParameters()
+        private object[] CreateDefaultArguments()
         {
             var result = new List<object>();
 
@@ -375,11 +360,11 @@ namespace NoWoL.TestingUtilities
         }
 
         /// <summary>
-        /// Automatically configure the arguments' rules using the rules specified by <paramref name="validationRules"/>. Calling this will replace any previous rules.
+        /// Automatically configure the parameters' rules using the rules specified by <paramref name="validationRules"/>. Calling this will replace any previous rules.
         /// </summary>
         /// <param name="validationRules">Validation rules to apply</param>
-        /// <returns>This instance of <see cref="ArgumentsValidator"/> to allow chaining.</returns>
-        public ArgumentsValidator SetupAll(IArgumentsValidationRules validationRules)
+        /// <returns>This instance of <see cref="ParametersValidator"/> to allow chaining.</returns>
+        public ParametersValidator SetupAll(IParametersValidationRules validationRules)
         {
             if (validationRules == null)
             {
@@ -400,7 +385,7 @@ namespace NoWoL.TestingUtilities
             return this;
         }
 
-        private IExpectedExceptionRule[] GetRulesForDataType(Type dataType, IArgumentsValidationRules validationRules)
+        private IExpectedExceptionRule[] GetRulesForDataType(Type dataType, IParametersValidationRules validationRules)
         {
             if (dataType == typeof(string))
             {

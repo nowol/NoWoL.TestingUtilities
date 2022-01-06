@@ -91,7 +91,7 @@ namespace NoWoL.TestingUtilities.Tests.ExpectedExceptions
                "Unit")]
         public void GetInvalidParameterValueThrowIfInputParametersAreInvalid()
         {
-            var validator = ArgumentsValidatorHelper.GetMethodArgumentsValidator(new ExpectedExceptionRuleWithInvalidValue<T>(_invalidValue), nameof(ExpectedExceptionRuleWithInvalidValue<T>.GetInvalidParameterValue), methodArguments: new object[] { MethodsHolder.GetStringParameterInfo(), null });
+            var validator = ParametersValidatorHelper.GetMethodParametersValidator(new ExpectedExceptionRuleWithInvalidValue<T>(_invalidValue), nameof(ExpectedExceptionRuleWithInvalidValue<T>.GetInvalidParameterValue), methodParameters: new object[] { MethodsHolder.GetStringParameterInfo(), null });
 
             validator.SetupParameter("parameterInfo", ExpectedExceptionRules.NotNull)
                      .SetupParameter("defaultValue", ExpectedExceptionRules.None)
@@ -155,7 +155,7 @@ namespace NoWoL.TestingUtilities.Tests.ExpectedExceptions
         {
             var obj = new InvalidValueTestClass(_invalidValue);
             
-            var validator = ArgumentsValidatorHelper.GetMethodArgumentsValidator(obj, nameof(InvalidValueTestClass.MethodToValidate));
+            var validator = ParametersValidatorHelper.GetMethodParametersValidator(obj, nameof(InvalidValueTestClass.MethodToValidate));
             validator.SetupParameter("paramO", ExpectedExceptionRules.NotValue(_invalidValue))
                      .Validate();
         }
@@ -167,7 +167,7 @@ namespace NoWoL.TestingUtilities.Tests.ExpectedExceptions
         {
             var obj = new InvalidValueTestClass(_validValue);
             
-            var validator = ArgumentsValidatorHelper.GetMethodArgumentsValidator(obj, nameof(InvalidValueTestClass.MethodToValidate));
+            var validator = ParametersValidatorHelper.GetMethodParametersValidator(obj, nameof(InvalidValueTestClass.MethodToValidate));
             validator.SetupParameter("paramO", ExpectedExceptionRules.None)
                      .Validate();
         }

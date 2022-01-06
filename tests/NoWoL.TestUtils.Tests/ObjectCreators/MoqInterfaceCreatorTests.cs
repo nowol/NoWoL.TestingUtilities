@@ -10,14 +10,6 @@ namespace NoWoL.TestingUtilities.Tests.ObjectCreators
     {
         private readonly MoqInterfaceCreator _sut = new();
 
-        [Fact]
-        [Trait("Category",
-               "Unit")]
-        public void CanHandleInterfaces()
-        {
-            Assert.True(_sut.CanHandle(typeof(ISomeInterface)));
-        }
-
         [Theory]
         [Trait("Category",
                "Unit")]
@@ -27,17 +19,6 @@ namespace NoWoL.TestingUtilities.Tests.ObjectCreators
         public void UnhandledTypes(Type type)
         {
             Assert.False(_sut.CanHandle(type));
-        }
-
-        [Fact]
-        [Trait("Category",
-               "Unit")]
-        public void CreateMockOfInterface()
-        {
-            var result = _sut.Create(typeof(ISomeInterface),
-                                     null) as ISomeInterface;
-            var mock = Mock.Get(result);
-            Assert.NotNull(mock);
         }
 
         [Theory]
@@ -51,60 +32,15 @@ namespace NoWoL.TestingUtilities.Tests.ObjectCreators
             var ex = Assert.Throws<UnsupportedTypeException>(() => _sut.Create(type,
                                                                                null));
 #pragma warning disable CA1062 // Validate arguments of public methods
-            Assert.Equal("Expecting an interface however received " + type.FullName, ex.Message);
+            Assert.Equal("Expecting an interface however received " + type.FullName,
+                         ex.Message);
 #pragma warning restore CA1062 // Validate arguments of public methods
-        }
-
-        [Fact]
-        [Trait("Category",
-               "Unit")]
-        public void CanHandleThrowIfInputParametersAreInvalid()
-        {
-            var validator = ArgumentsValidatorHelper.GetMethodArgumentsValidator(new MoqInterfaceCreator(), nameof(MoqInterfaceCreator.CanHandle), methodArguments: new object[] { null });
-
-            validator.SetupParameter("type", ExpectedExceptionRules.NotNull)
-                     .Validate();
-        }
-
-        [Fact]
-        [Trait("Category",
-               "Unit")]
-        public void CreateThrowIfInputParametersAreInvalid()
-        {
-            var validator = ArgumentsValidatorHelper.GetMethodArgumentsValidator(new MoqInterfaceCreator(), nameof(MoqInterfaceCreator.Create), methodArguments: new object[] { typeof(ISomeInterface), null });
-
-            validator.SetupParameter("type", ExpectedExceptionRules.NotNull)
-                     .SetupParameter("objectCreators", ExpectedExceptionRules.None)
-                     .Validate();
-        }
-
-        [Fact]
-        [Trait("Category",
-               "Unit")]
-        public void ValidateWithException()
-        {
-            var obj = new TestClass(null);
-
-            var validator = ArgumentsValidatorHelper.GetMethodArgumentsValidator(obj, nameof(TestClass.MethodToValidate));
-            validator.SetupParameter("paramO", ExpectedExceptionRules.NotNull)
-                     .Validate();
-        }
-
-        [Fact]
-        [Trait("Category",
-               "Unit")]
-        public void ValidateWithoutException()
-        {
-            var obj = new TestClass(new Mock<ISomeInterface>().Object);
-
-            var validator = ArgumentsValidatorHelper.GetMethodArgumentsValidator(obj, nameof(TestClass.MethodToValidate));
-            validator.SetupParameter("paramO", ExpectedExceptionRules.None)
-                     .Validate();
         }
 
         private class TestClass
         {
             private readonly ISomeInterface _expected;
+
             public TestClass(ISomeInterface expected)
             {
                 _expected = expected;
@@ -119,6 +55,83 @@ namespace NoWoL.TestingUtilities.Tests.ObjectCreators
 
                 return null;
             }
+        }
+
+        [Fact]
+        [Trait("Category",
+               "Unit")]
+        public void CanHandleInterfaces()
+        {
+            Assert.True(_sut.CanHandle(typeof(ISomeInterface)));
+        }
+
+        [Fact]
+        [Trait("Category",
+               "Unit")]
+        public void CanHandleThrowIfInputParametersAreInvalid()
+        {
+            var validator = ParametersValidatorHelper.GetMethodParametersValidator(new MoqInterfaceCreator(),
+                                                                                   nameof(MoqInterfaceCreator.CanHandle),
+                                                                                   new object[] { null });
+
+            validator.SetupParameter("type",
+                                     ExpectedExceptionRules.NotNull)
+                     .Validate();
+        }
+
+        [Fact]
+        [Trait("Category",
+               "Unit")]
+        public void CreateMockOfInterface()
+        {
+            var result = _sut.Create(typeof(ISomeInterface),
+                                     null) as ISomeInterface;
+            var mock = Mock.Get(result);
+            Assert.NotNull(mock);
+        }
+
+        [Fact]
+        [Trait("Category",
+               "Unit")]
+        public void CreateThrowIfInputParametersAreInvalid()
+        {
+            var validator = ParametersValidatorHelper.GetMethodParametersValidator(new MoqInterfaceCreator(),
+                                                                                   nameof(MoqInterfaceCreator.Create),
+                                                                                   new object[] { typeof(ISomeInterface), null });
+
+            validator.SetupParameter("type",
+                                     ExpectedExceptionRules.NotNull)
+                     .SetupParameter("objectCreators",
+                                     ExpectedExceptionRules.None)
+                     .Validate();
+        }
+
+        [Fact]
+        [Trait("Category",
+               "Unit")]
+        public void ValidateWithException()
+        {
+            var obj = new TestClass(null);
+
+            var validator = ParametersValidatorHelper.GetMethodParametersValidator(obj,
+                                                                                   nameof(TestClass.MethodToValidate));
+            validator.SetupParameter("paramO",
+                                     ExpectedExceptionRules.NotNull)
+                     .Validate();
+        }
+
+        [Fact]
+        [Trait("Category",
+               "Unit")]
+        public void ValidateWithoutException()
+        {
+            var obj = new TestClass(new Mock<ISomeInterface>().Object);
+
+            var validator = ParametersValidatorHelper.GetMethodParametersValidator(obj,
+                                                                                   nameof(TestClass.MethodToValidate));
+            validator.SetupParameter("paramO",
+                                     ExpectedExceptionRules.None)
+                     .Validate();
         }
     }
 }

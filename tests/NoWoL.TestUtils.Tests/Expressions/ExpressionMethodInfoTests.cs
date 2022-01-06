@@ -9,12 +9,15 @@ namespace NoWoL.TestingUtilities.Tests.Expressions
         [Fact]
         [Trait("Category",
                "Unit")]
-        public void SettingTheMethodNameAllowsUsToReadItBack()
+        public void SettingTheArgumentValuesAllowsUsToReadItBack()
         {
             var sut = new ExpressionMethodInfo();
-            sut.MethodName = "Freddie";
-            Assert.Equal("Freddie",
-                         sut.MethodName);
+            sut.ArgumentValues.Add(new ExpressionArgumentInfo
+                                   {
+                                       Name = "Freddie",
+                                       Value = "Mercury"
+                                   });
+            Assert.Single(sut.ArgumentValues);
         }
 
         [Fact]
@@ -32,15 +35,12 @@ namespace NoWoL.TestingUtilities.Tests.Expressions
         [Fact]
         [Trait("Category",
                "Unit")]
-        public void SettingTheArgumentValuesAllowsUsToReadItBack()
+        public void SettingTheMethodNameAllowsUsToReadItBack()
         {
             var sut = new ExpressionMethodInfo();
-            sut.ArgumentValues.Add(new ExpressionArgumentInfo
-                                   {
-                                       Name = "Freddie",
-                                       Value = "Mercury"
-                                   });
-            Assert.Single(sut.ArgumentValues);
+            sut.MethodName = "Freddie";
+            Assert.Equal("Freddie",
+                         sut.MethodName);
         }
     }
 }

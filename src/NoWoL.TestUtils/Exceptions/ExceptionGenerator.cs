@@ -8,38 +8,38 @@ namespace NoWoL.TestingUtilities
     [Serializable]
     [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-    public class ArgumentRuleException : Exception
+    public class ParameterRuleException : Exception
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
     {
         /// <summary>
-        /// Creates an instance of the <see cref="ArgumentRuleException"/> class.
+        /// Creates an instance of the <see cref="ParameterRuleException"/> class.
         /// </summary>
-        public ArgumentRuleException()
+        public ParameterRuleException()
         {}
         
         /// <summary>
-        /// Creates an instance of the <see cref="ArgumentRuleException"/> class.
+        /// Creates an instance of the <see cref="ParameterRuleException"/> class.
         /// </summary>
         /// <param name="message">Message of the exception</param>
-        public ArgumentRuleException(string message) 
+        public ParameterRuleException(string message) 
             : base(message)
         {}
 
         /// <summary>
-        /// Creates an instance of the <see cref="ArgumentRuleException"/> class.
+        /// Creates an instance of the <see cref="ParameterRuleException"/> class.
         /// </summary>
         /// <param name="message">Message of the exception</param>
         /// <param name="innerException">Optional inner exception</param>
-        public ArgumentRuleException(string message, Exception innerException)
+        public ParameterRuleException(string message, Exception innerException)
             : base(message, innerException)
         {}
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ArgumentRuleException"/> class.
+        /// Initializes a new instance of the <see cref="ParameterRuleException"/> class.
         /// </summary>
         /// <param name="info">Serialization info</param>
         /// <param name="context">Serialization context</param>
-        protected ArgumentRuleException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context)
+        protected ParameterRuleException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context)
             : base(info, context)
         {
         }
@@ -48,13 +48,13 @@ namespace NoWoL.TestingUtilities
         /// Helper method to create the exception
         /// </summary>
         /// <param name="innerException">Optional inner exception</param>
-        /// <returns>An instance of the <see cref="ArgumentRuleException"/> exception</returns>
+        /// <returns>An instance of the <see cref="ParameterRuleException"/> exception</returns>
 #pragma warning disable CS1573 // Parameter has no matching param tag in the XML comment (but other parameters do)
-        public static ArgumentRuleException Create(string ruleName, string paramName, string additionalReason, Exception innerException = null)
+        public static ParameterRuleException Create(string ruleName, string paramName, string additionalReason, Exception innerException = null)
 #pragma warning restore CS1573 // Parameter has no matching param tag in the XML comment (but other parameters do)
         {
 #pragma warning disable CA1062 // Validate arguments of public methods
-            return new ArgumentRuleException($"Rule '{ruleName}' for parameter '{paramName}' was not respected.{ExceptionFormatters.AddSpaceWhenRequiredFormatter(additionalReason)}", innerException);
+            return new ParameterRuleException($"Rule '{ruleName}' for parameter '{paramName}' was not respected.{ExceptionFormatters.AddSpaceWhenRequiredFormatter(additionalReason)}", innerException);
 #pragma warning restore CA1062 // Validate arguments of public methods
         }
     }
