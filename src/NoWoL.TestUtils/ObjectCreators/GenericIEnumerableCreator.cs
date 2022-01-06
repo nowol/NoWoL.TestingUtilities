@@ -20,6 +20,11 @@ namespace NoWoL.TestingUtilities.ObjectCreators
                 throw new ArgumentNullException(nameof(type));
             }
 
+            return IsIEnumerable(type);
+        }
+
+        internal static bool IsIEnumerable(Type type)
+        {
             return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IEnumerable<>);
         }
 

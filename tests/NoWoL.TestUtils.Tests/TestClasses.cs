@@ -336,5 +336,51 @@ namespace NoWoL.TestingUtilities.Tests
 
             return null;
         }
+        
+        public string MethodForDefaultRules(string param1, ISomeInterface param2, List<ISomeInterface> param3, ISomeInterface[] param4,
+                                            IEnumerable<ISomeInterface> param5, Dictionary<string, string> param6, int param7, ComplexTestClass param8)
+        {
+            if (param1 == null)
+            {
+                throw new ArgumentNullException(nameof(param1));
+            }
+
+            if (String.IsNullOrWhiteSpace(param1))
+            {
+                throw new ArgumentException("Cannot be empty or whitespace", nameof(param1));
+            }
+
+            if (param2 == null)
+            {
+                throw new ArgumentNullException(nameof(param2));
+            }
+
+            if (param3 == null)
+            {
+                throw new ArgumentNullException(nameof(param3));
+            }
+
+            if (param4 == null)
+            {
+                throw new ArgumentNullException(nameof(param4));
+            }
+
+            if (param5 == null)
+            {
+                throw new ArgumentNullException(nameof(param5));
+            }
+
+            if (param6 == null)
+            {
+                throw new ArgumentNullException(nameof(param6));
+            }
+
+            if (param8 == null)
+            {
+                throw new ArgumentNullException(nameof(param8));
+            }
+
+            return null;
+        }
     }
 }

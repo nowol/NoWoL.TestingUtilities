@@ -20,6 +20,11 @@ namespace NoWoL.TestingUtilities.ObjectCreators
                 throw new ArgumentNullException(nameof(type));
             }
 
+            return IsICollection(type);
+        }
+
+        internal static bool IsICollection(Type type)
+        {
             return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(ICollection<>);
         }
 
