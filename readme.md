@@ -70,7 +70,7 @@ Configuring every parameters manually can be quite a chore. You can use the `Set
 
 ```csharp
 var obj = new TestClass();
-var validator = ArgumentsValidatorHelper.GetExpressionArgumentsValidator(obj);
+var validator = ArgumentsValidatorHelper.GetMethodArgumentsValidator(obj, nameof(TestClass.MyMethod));
 validator.SetupAll(ArgumentsValidator.DefaultRules) // The default rules are the predefined validation rules for the most common validations. You can define you own rules if the defaults do not work for you.
          .UpdateParameter("param1", ExpectedExceptionRules.NotValue("Freddie")) // You can call SetupAll to configure every parameters with the default rules and then use UpdateParameter to update any parameters which the default rules are not applicable
          .Validate();
