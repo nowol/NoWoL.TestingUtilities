@@ -64,6 +64,18 @@ validator.Setup(x => x.MyMethod(validator.For<string>(ExpectedExceptionRules.Non
          .Validate();
 ```
 
+### Automatic Setup
+
+Configuring every parameters manually can be quite a chore. You can use the `Setup` method to automatically configure the parameters' rules of a method using predefined rules.
+
+```csharp
+var obj = new TestClass();
+var validator = ArgumentsValidatorHelper.GetExpressionArgumentsValidator(obj);
+validator.SetupAll(ArgumentsValidator.DefaultRules) // The default rules are the predefined validation rules for the most common validations. You can define you own rules if the defaults do not work for you.
+         .UpdateParameter("param1", ExpectedExceptionRules.NotValue("Freddie")) // You can call SetupAll to configure every parameters with the default rules and then use UpdateParameter to update any parameters which the default rules are not applicable
+         .Validate();
+```
+
 ### Type creation
 
 The library needs to know how to create the different object to correctly call the methods under test. The most common types are handled by default however you may need to create a type that is not handled by default. To do so, you will need to create an instance of `IObjectCreator` to handle the type creation.

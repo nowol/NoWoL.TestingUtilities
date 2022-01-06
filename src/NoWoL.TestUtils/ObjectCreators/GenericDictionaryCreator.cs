@@ -20,13 +20,18 @@ namespace NoWoL.TestingUtilities.ObjectCreators
                 throw new ArgumentNullException(nameof(type));
             }
 
+            return IsDictionary(type);
+        }
+
+        internal static bool IsDictionary(Type type)
+        {
             return type.IsGenericType 
                    && 
                    (
                        type.GetGenericTypeDefinition() == typeof(IDictionary<,>)
                        ||
                        type.GetGenericTypeDefinition() == typeof(Dictionary<,>)
-                    );
+                   );
         }
 
         /// <summary>

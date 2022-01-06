@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using FluentAssertions;
 using NoWoL.TestingUtilities.ExpectedExceptions;
 using Xunit;
 
@@ -7,6 +10,8 @@ namespace NoWoL.TestingUtilities.Tests
 {
     public class ArgumentsValidatorTests
     {
+        #region constructor
+
         [Fact]
         [Trait("Category",
                "Unit")]
@@ -40,6 +45,10 @@ namespace NoWoL.TestingUtilities.Tests
             Assert.Equal("method",
                          ex.ParamName);
         }
+
+        #endregion
+
+        #region SetupParameter
 
         [Fact]
         [Trait("Category",
@@ -97,6 +106,24 @@ namespace NoWoL.TestingUtilities.Tests
         [Fact]
         [Trait("Category",
                "Unit")]
+        public void SetupParameterReturnSameValidator()
+        {
+            var method = typeof(ComplexTestClass).GetMethod(nameof(ComplexTestClass.SomeMethod));
+            var sut = new ArgumentsValidator(new ComplexTestClass(), method, null,
+                                             ArgumentsValidatorHelper.DefaultCreators);
+            var returnedValidator= sut.SetupParameter("param1",
+                                                      ExpectedExceptionRules.NotNull);
+            Assert.Same(sut,
+                        returnedValidator);
+        }
+
+        #endregion
+
+        #region Validate
+
+        [Fact]
+        [Trait("Category",
+               "Unit")]
         public void ValidateThrowsIfSomeParametersWereNotConfigured()
         {
             var method = typeof(ComplexTestClass).GetMethod(nameof(ComplexTestClass.SomeMethod));
@@ -109,6 +136,21 @@ namespace NoWoL.TestingUtilities.Tests
             var ex = Assert.Throws<UnconfiguredArgumentsException>(() => sut.Validate());
 
             Assert.Equal("The following arguments have not been configured: param2, param3, param4, param5.",
+                         ex.Message);
+        }
+
+        [Fact]
+        [Trait("Category",
+               "Unit")]
+        public void ValidateThrowsIfNoParametersWereConfigured()
+        {
+            var method = typeof(ComplexTestClass).GetMethod(nameof(ComplexTestClass.SomeMethod));
+            var sut = new ArgumentsValidator(new ComplexTestClass(), method, null,
+                                             ArgumentsValidatorHelper.DefaultCreators);
+
+            var ex = Assert.Throws<InvalidOperationException>(() => sut.Validate());
+
+            Assert.Equal("No arguments were configured for validation. Call SetupAll or SetupParameter before calling Validate/ValidateAsync.",
                          ex.Message);
         }
 
@@ -128,7 +170,7 @@ namespace NoWoL.TestingUtilities.Tests
             sut.SetupParameter("param1",
                                ExpectedExceptionRules.NotNull, ExpectedExceptionRules.NotEmptyOrWhiteSpace)
                .Validate();
-            
+
             // no exceptions
         }
 
@@ -144,7 +186,7 @@ namespace NoWoL.TestingUtilities.Tests
             sut.SetupParameter("param1",
                                ExpectedExceptionRules.NotNull, ExpectedExceptionRules.NotEmptyOrWhiteSpace)
                .Validate();
-            
+
             // no exceptions
         }
 
@@ -187,6 +229,10 @@ namespace NoWoL.TestingUtilities.Tests
             // no exceptions
         }
 
+        #endregion
+
+        #region ValidateAsync
+
         [Fact]
         [Trait("Category",
                "Unit")]
@@ -203,7 +249,8 @@ namespace NoWoL.TestingUtilities.Tests
             await sut.SetupParameter("param1",
                                ExpectedExceptionRules.NotNull, ExpectedExceptionRules.NotEmptyOrWhiteSpace)
                .ValidateAsync()
-               .ConfigureAwait(false);;
+               .ConfigureAwait(false);
+            ;
 
             // no exceptions
         }
@@ -232,6 +279,21 @@ namespace NoWoL.TestingUtilities.Tests
         [Fact]
         [Trait("Category",
                "Unit")]
+        public async Task ValidateAsyncThrowsIfNoParametersWereConfigured()
+        {
+            var method = typeof(ComplexTestClass).GetMethod(nameof(ComplexTestClass.SomeMethod));
+            var sut = new ArgumentsValidator(new ComplexTestClass(), method, null,
+                                             ArgumentsValidatorHelper.DefaultCreators);
+
+            var ex = await Assert.ThrowsAsync<InvalidOperationException>(() => sut.ValidateAsync()).ConfigureAwait(false);
+
+            Assert.Equal("No arguments were configured for validation. Call SetupAll or SetupParameter before calling Validate/ValidateAsync.",
+                         ex.Message);
+        }
+
+        [Fact]
+        [Trait("Category",
+               "Unit")]
         public async Task ValidateAsyncCallsAsyncCodeWithGenericValueTask()
         {
             var method = typeof(SimpleTestClass).GetMethod(nameof(SimpleTestClass.MethodWithStringValidationAsyncWithGenericValueTask));
@@ -245,7 +307,8 @@ namespace NoWoL.TestingUtilities.Tests
             await sut.SetupParameter("param1",
                                      ExpectedExceptionRules.NotNull, ExpectedExceptionRules.NotEmptyOrWhiteSpace)
                .ValidateAsync()
-               .ConfigureAwait(false);;
+               .ConfigureAwait(false);
+            ;
 
             // no exceptions
         }
@@ -266,7 +329,8 @@ namespace NoWoL.TestingUtilities.Tests
             await sut.SetupParameter("paramW",
                                ExpectedExceptionRules.None)
                .ValidateAsync()
-               .ConfigureAwait(false);;
+               .ConfigureAwait(false);
+            ;
 
             // no exceptions
         }
@@ -278,7 +342,7 @@ namespace NoWoL.TestingUtilities.Tests
         {
             var method = typeof(SimpleTestClass).GetMethod(nameof(SimpleTestClass.MethodWithNoValidationAsyncWithNonGenericValueTask));
             var parameters = new object[]
-                             {  
+                             {
                                  "Freddie"
                              };
             var sut = new ArgumentsValidator(new SimpleTestClass(), method, parameters,
@@ -287,7 +351,8 @@ namespace NoWoL.TestingUtilities.Tests
             await sut.SetupParameter("paramW",
                                ExpectedExceptionRules.None)
                .ValidateAsync()
-               .ConfigureAwait(false);;
+               .ConfigureAwait(false);
+            ;
 
             // no exceptions
         }
@@ -333,7 +398,7 @@ namespace NoWoL.TestingUtilities.Tests
                                                                                               ExpectedExceptionRules.NotEmptyOrWhiteSpace)
                                                                               .ValidateAsync())
                                  .ConfigureAwait(false);
-            
+
             Assert.Equal("The requested method does not return a Task. Please call the non async Validate method.",
                          ex.Message);
         }
@@ -357,5 +422,224 @@ namespace NoWoL.TestingUtilities.Tests
 
             // no exceptions
         }
+
+        #endregion
+
+        #region SetupAll
+
+        [Fact]
+        [Trait("Category",
+               "Unit")]
+        public void SetupEveryParametersWithCommonRules()
+        {
+            var method = typeof(ComplexTestClass).GetMethod(nameof(ComplexTestClass.MethodForDefaultRules));
+            var validator = new ArgumentsValidator(new ComplexTestClass(),
+                                                   method,
+                                                   null,
+                                                   ArgumentsValidatorHelper.DefaultCreators.Union(new[] { new ComplexTestClassObjectCreator() }).ToArray());
+
+            validator.SetupAll(ArgumentsValidator.DefaultRules)
+                     .Validate();
+        }
+
+        [Fact]
+        [Trait("Category",
+               "Unit")]
+        public void SetupShouldNotThrowIfParameterWasAlreadyConfigured()
+        {
+            var method = typeof(ComplexTestClass).GetMethod(nameof(ComplexTestClass.MethodForDefaultRules));
+            var validator = new ArgumentsValidator(new ComplexTestClass(),
+                                                   method,
+                                                   null,
+                                                   ArgumentsValidatorHelper.DefaultCreators.Union(new[] { new ComplexTestClassObjectCreator() }).ToArray());
+
+            validator.SetupParameter("param1",
+                                     ExpectedExceptionRules.NotNull)
+                     .SetupAll(ArgumentsValidator.DefaultRules)
+                     .Validate();
+        }
+
+        [Fact]
+        [Trait("Category",
+               "Unit")]
+        public void SetupThrowsIfInputParametersAreInvalid()
+        {
+            var method = typeof(ComplexTestClass).GetMethod(nameof(ComplexTestClass.SomeMethod));
+            var sut = new ArgumentsValidator(new ComplexTestClass(), method, null,
+                                             ArgumentsValidatorHelper.DefaultCreators);
+
+            var validator = ArgumentsValidatorHelper.GetMethodArgumentsValidator(sut, nameof(ArgumentsValidator.SetupAll), new object[] { new ArgumentsValidationRules() });
+
+            validator.SetupParameter("validationRules", ExpectedExceptionRules.NotNull)
+                     .Validate();
+        }
+
+        [Fact]
+        [Trait("Category",
+               "Unit")]
+        public void SetupFallbackToNoneIfRulesWereNotDefineForDataType()
+        {
+            var validator = ArgumentsValidatorHelper.GetMethodArgumentsValidator(new ComplexTestClass(), nameof(ComplexTestClass.MethodForDefaultRules), new object[] { new ArgumentsValidationRules() });
+
+            validator.SetupAll(new ArgumentsValidationRules());
+
+            validator.GetParameterRules("param1").Should().BeEquivalentTo(new[] { ExpectedExceptionRules.None });
+            validator.GetParameterRules("param2").Should().BeEquivalentTo(new[] { ExpectedExceptionRules.None });
+            validator.GetParameterRules("param3").Should().BeEquivalentTo(new[] { ExpectedExceptionRules.None });
+            validator.GetParameterRules("param4").Should().BeEquivalentTo(new[] { ExpectedExceptionRules.None });
+            validator.GetParameterRules("param5").Should().BeEquivalentTo(new[] { ExpectedExceptionRules.None });
+            validator.GetParameterRules("param6").Should().BeEquivalentTo(new[] { ExpectedExceptionRules.None });
+            validator.GetParameterRules("param7").Should().BeEquivalentTo(new[] { ExpectedExceptionRules.None });
+            validator.GetParameterRules("param8").Should().BeEquivalentTo(new[] { ExpectedExceptionRules.None });
+        }
+
+        [Fact]
+        [Trait("Category",
+               "Unit")]
+        public void SetupReturnSameValidator()
+        {
+            var method = typeof(ComplexTestClass).GetMethod(nameof(ComplexTestClass.SomeMethod));
+            var sut = new ArgumentsValidator(new ComplexTestClass(), method, null,
+                                             ArgumentsValidatorHelper.DefaultCreators);
+            var returnedValidator = sut.SetupAll(ArgumentsValidator.DefaultRules);
+            Assert.Same(sut,
+                        returnedValidator);
+        }
+
+        #endregion
+
+        #region GetParameterRules
+
+        [Fact]
+        [Trait("Category",
+               "Unit")]
+        public void GetParameterRulesThrowsIfInputParametersAreInvalid()
+        {
+            var method = typeof(ComplexTestClass).GetMethod(nameof(ComplexTestClass.SomeMethod));
+            var sut = new ArgumentsValidator(new ComplexTestClass(), method, null,
+                                             ArgumentsValidatorHelper.DefaultCreators);
+
+            var validator = ArgumentsValidatorHelper.GetMethodArgumentsValidator(sut, nameof(ArgumentsValidator.GetParameterRules), new object[] { new ArgumentsValidationRules() });
+
+            validator.SetupParameter("paramName", ExpectedExceptionRules.NotNull, ExpectedExceptionRules.NotEmptyOrWhiteSpace)
+                     .Validate();
+        }
+
+        [Fact]
+        [Trait("Category",
+               "Unit")]
+        public void GetParameterRulesThrowsIfRequestedParametersIsNotConfigured()
+        {
+            var method = typeof(ComplexTestClass).GetMethod(nameof(ComplexTestClass.SomeMethod));
+            var sut = new ArgumentsValidator(new ComplexTestClass(), method, null,
+                                             ArgumentsValidatorHelper.DefaultCreators);
+
+            var validator = ArgumentsValidatorHelper.GetMethodArgumentsValidator(sut, nameof(ArgumentsValidator.GetParameterRules), new object[] { new ArgumentsValidationRules() });
+
+            var ex = Assert.Throws<KeyNotFoundException>(() => validator.GetParameterRules("invalid"));
+            Assert.Equal("The given key 'invalid' was not present in the dictionary.",
+                         ex.Message);
+        }
+
+        [Fact]
+        [Trait("Category",
+               "Unit")]
+        public void GetParameterRulesReturnsTheConfiguredParameter()
+        {
+            var method = typeof(ComplexTestClass).GetMethod(nameof(ComplexTestClass.SomeMethod));
+            var sut = new ArgumentsValidator(new ComplexTestClass(), method, null,
+                                             ArgumentsValidatorHelper.DefaultCreators);
+
+            var validator = ArgumentsValidatorHelper.GetMethodArgumentsValidator(sut, nameof(ArgumentsValidator.GetParameterRules), new object[] { new ArgumentsValidationRules() });
+            validator.SetupParameter("paramName", ExpectedExceptionRules.NotNull, ExpectedExceptionRules.NotEmptyOrWhiteSpace);
+
+            var paramRules = validator.GetParameterRules("paramName");
+            paramRules.Should().BeEquivalentTo(new[] { ExpectedExceptionRules.NotNull, ExpectedExceptionRules.NotEmptyOrWhiteSpace });
+        }
+
+        #endregion
+
+        #region UpdateParameter
+
+        [Fact]
+        [Trait("Category",
+               "Unit")]
+        public void UpdateParameterThrowsIfInputParametersAreInvalid()
+        {
+            var method = typeof(ComplexTestClass).GetMethod(nameof(ComplexTestClass.SomeMethod));
+            var sut = new ArgumentsValidator(new ComplexTestClass(), method, null,
+                                             ArgumentsValidatorHelper.DefaultCreators);
+
+            var validator = ArgumentsValidatorHelper.GetMethodArgumentsValidator(sut, nameof(ArgumentsValidator.UpdateParameter), new object[] { "param1", new IExpectedExceptionRule[] { ExpectedExceptionRules.NotNull } });
+
+            validator.SetupParameter("paramName", ExpectedExceptionRules.NotNull, ExpectedExceptionRules.NotEmptyOrWhiteSpace)
+                     .SetupParameter("rules", ExpectedExceptionRules.NotNull, ExpectedExceptionRules.NotEmpty)
+                     .Validate();
+        }
+
+        [Fact]
+        [Trait("Category",
+               "Unit")]
+        public void UpdateParameterThrowsIfParameterNameIsNotValid()
+        {
+            var method = typeof(ComplexTestClass).GetMethod(nameof(ComplexTestClass.SomeMethod));
+            var sut = new ArgumentsValidator(new ComplexTestClass(), method, null,
+                                             ArgumentsValidatorHelper.DefaultCreators);
+
+            var ex = Assert.Throws<ArgumentException>(() => sut.UpdateParameter("invalid", new ExpectedNoExceptionRule()));
+
+            Assert.Equal("paramName",
+                         ex.ParamName);
+            Assert.Equal("Parameter 'invalid' does not exists on the method. (Parameter 'paramName')",
+                         ex.Message);
+        }
+
+        [Fact]
+        [Trait("Category",
+               "Unit")]
+        public void UpdateParameterThrowsIfParameterNameHasNotBeenAdded()
+        {
+            var method = typeof(ComplexTestClass).GetMethod(nameof(ComplexTestClass.SomeMethod));
+            var sut = new ArgumentsValidator(new ComplexTestClass(), method, null,
+                                             ArgumentsValidatorHelper.DefaultCreators);
+
+            var ex = Assert.Throws<KeyNotFoundException>(() => sut.UpdateParameter("param1", new ExpectedNoExceptionRule()));
+
+            Assert.Equal("The given key 'param1' was not present in the dictionary.",
+                         ex.Message);
+        }
+
+        [Fact]
+        [Trait("Category",
+               "Unit")]
+        public void UpdateParameterChangesTheConfiguredRules()
+        {
+            var method = typeof(ComplexTestClass).GetMethod(nameof(ComplexTestClass.SomeMethod));
+            var sut = new ArgumentsValidator(new ComplexTestClass(), method, null,
+                                             ArgumentsValidatorHelper.DefaultCreators);
+            sut.SetupParameter("param1",
+                               ExpectedExceptionRules.NotNull);
+            sut.UpdateParameter("param1",
+                                ExpectedExceptionRules.NotEmptyOrWhiteSpace);
+            sut.GetParameterRules("param1").Should().BeEquivalentTo(new[] { ExpectedExceptionRules.NotEmptyOrWhiteSpace });
+        }
+
+        [Fact]
+        [Trait("Category",
+               "Unit")]
+        public void UpdateParameterReturnSameValidator()
+        {
+            var method = typeof(ComplexTestClass).GetMethod(nameof(ComplexTestClass.SomeMethod));
+            var sut = new ArgumentsValidator(new ComplexTestClass(), method, null,
+                                             ArgumentsValidatorHelper.DefaultCreators);
+            sut.SetupParameter("param1",
+                               ExpectedExceptionRules.NotNull);
+            var returnedValidator = sut.UpdateParameter("param1",
+                                                        ExpectedExceptionRules.NotEmptyOrWhiteSpace);
+            Assert.Same(sut,
+                        returnedValidator);
+        }
+
+        #endregion
     }
 }

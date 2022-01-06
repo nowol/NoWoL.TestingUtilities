@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using NoWoL.TestingUtilities.ExpectedExceptions;
 using NoWoL.TestingUtilities.ObjectCreators;
 
 namespace NoWoL.TestingUtilities
@@ -60,6 +61,28 @@ namespace NoWoL.TestingUtilities
         }
 
         /// <summary>
+        /// Default configuration rules for every parameters.
+        /// <remarks>
+        /// Strings will be configured to use both NotNull (ArgumentNullException) and NotEmptyOrWhiteSpace (ArgumentException).
+        /// Value types will be configured to use None.
+        /// Everything else will use NotNull
+        /// </remarks>
+        /// </summary>
+        public static IArgumentsValidationRules DefaultRules { get; } = GetDefaultRules();
+
+        private static IArgumentsValidationRules GetDefaultRules()
+        {
+            return new ArgumentsValidationRules
+                   {
+                       StringRules = new []{ ExpectedExceptionRules.NotNull, ExpectedExceptionRules.NotEmptyOrWhiteSpace },
+                       ValueTypesRules = new []{ ExpectedExceptionRules.None },
+                       InterfacesRules = new []{ ExpectedExceptionRules.NotNull },
+                       CollectionTypesRules = new []{ ExpectedExceptionRules.NotNull },
+                       OtherTypesRules = new []{ ExpectedExceptionRules.NotNull },
+                   };
+        }
+
+        /// <summary>
         /// Configures the validation rules for a named parameter
         /// </summary>
         /// <param name="paramName">Parameter to validate</param>
@@ -105,10 +128,77 @@ namespace NoWoL.TestingUtilities
         }
 
         /// <summary>
+        /// Update the validation rules for a named parameter
+        /// </summary>
+        /// <param name="paramName">Parameter to validate</param>
+        /// <param name="rules">Validation rules</param>
+        /// <returns>This instance of <see cref="ArgumentsValidator"/> to allow chaining.</returns>
+        public ArgumentsValidator UpdateParameter(string paramName, params IExpectedExceptionRule[] rules)
+        {
+            if (paramName == null)
+            {
+                throw new ArgumentNullException(nameof(paramName));
+            }
+
+            if (string.IsNullOrWhiteSpace(paramName))
+            {
+                throw new ArgumentException("Value cannot be null or whitespace.",
+                                            nameof(paramName));
+            }
+
+            if (!_parameters.Any(x => String.Equals(x.Name, paramName, StringComparison.Ordinal)))
+            {
+                throw new ArgumentException($"Parameter '{paramName}' does not exists on the method.", nameof(paramName));
+            }
+
+            if (rules == null)
+            {
+                throw new ArgumentNullException(nameof(rules));
+            }
+
+            if (rules.Length == 0)
+            {
+                throw new ArgumentException("Value cannot be an empty collection.",
+                                            nameof(rules));
+            }
+
+            if (!_expectedExceptions.ContainsKey(paramName))
+            {
+                throw new KeyNotFoundException($"The given key '{paramName}' was not present in the dictionary.");
+            }
+
+            _expectedExceptions[paramName] = rules;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Get the parameter rules
+        /// </summary>
+        /// <param name="paramName">Name of the parameter</param>
+        /// <returns>Rules of the parameter</returns>
+        public IExpectedExceptionRule[] GetParameterRules(string paramName)
+        {
+            if (paramName == null)
+            {
+                throw new ArgumentNullException(nameof(paramName));
+            }
+
+            if (string.IsNullOrWhiteSpace(paramName))
+            {
+                throw new ArgumentException("Value cannot be null or whitespace.",
+                                            nameof(paramName));
+            }
+
+            return _expectedExceptions[paramName];
+        }
+
+        /// <summary>
         /// Apply the validation rules
         /// </summary>
         public void Validate()
         {
+            ValidateConfiguredExceptions();
             ValidateMissingParameters();
 
             object[] defaultParameters = GetDefaultParameters();
@@ -155,6 +245,7 @@ namespace NoWoL.TestingUtilities
         /// </summary>
         public async Task ValidateAsync()
         {
+            ValidateConfiguredExceptions();
             ValidateMissingParameters();
 
             object[] defaultParameters = GetDefaultParameters();
@@ -245,6 +336,14 @@ namespace NoWoL.TestingUtilities
             return _methodArguments ?? CreateDefaultParameters();
         }
 
+        private void ValidateConfiguredExceptions()
+        {
+            if (_expectedExceptions.Count == 0)
+            {
+                throw new InvalidOperationException("No arguments were configured for validation. Call SetupAll or SetupParameter before calling Validate/ValidateAsync.");
+            }
+        }
+
         private void ValidateMissingParameters()
         {
             var missingParameters = _parameters.Select(x => x.Name).Except(_expectedExceptions.Keys).ToList();
@@ -273,6 +372,61 @@ namespace NoWoL.TestingUtilities
             }
 
             return result.ToArray();
+        }
+
+        /// <summary>
+        /// Automatically configure the arguments' rules using the rules specified by <paramref name="validationRules"/>. Calling this will replace any previous rules.
+        /// </summary>
+        /// <param name="validationRules">Validation rules to apply</param>
+        /// <returns>This instance of <see cref="ArgumentsValidator"/> to allow chaining.</returns>
+        public ArgumentsValidator SetupAll(IArgumentsValidationRules validationRules)
+        {
+            if (validationRules == null)
+            {
+                throw new ArgumentNullException(nameof(validationRules));
+            }
+
+            _expectedExceptions.Clear();
+
+            foreach (var parameterInfo in _parameters)
+            {
+                var rules = GetRulesForDataType(parameterInfo.ParameterType,
+                                                validationRules);
+
+                SetupParameter(parameterInfo.Name,
+                               rules ?? new[] { ExpectedExceptionRules.None });
+            }
+
+            return this;
+        }
+
+        private IExpectedExceptionRule[] GetRulesForDataType(Type dataType, IArgumentsValidationRules validationRules)
+        {
+            if (dataType == typeof(string))
+            {
+                return validationRules.StringRules;
+            }
+
+            if (dataType.IsValueType)
+            {
+                return validationRules.ValueTypesRules;
+            }
+
+            if (dataType.IsArray
+                || GenericICollectionCreator.IsICollection(dataType)
+                || GenericIEnumerableCreator.IsIEnumerable(dataType)
+                || GenericListCreator.IsList(dataType)
+                || GenericDictionaryCreator.IsDictionary(dataType))
+            {
+                return validationRules.CollectionTypesRules;
+            }
+
+            if (dataType.IsInterface)
+            {
+                return validationRules.InterfacesRules;
+            }
+
+            return validationRules.OtherTypesRules;
         }
     }
 }

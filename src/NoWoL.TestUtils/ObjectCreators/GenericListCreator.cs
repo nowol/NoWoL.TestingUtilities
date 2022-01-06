@@ -20,6 +20,11 @@ namespace NoWoL.TestingUtilities.ObjectCreators
                 throw new ArgumentNullException(nameof(type));
             }
 
+            return IsList(type);
+        }
+
+        internal static bool IsList(Type type)
+        {
             return type.IsGenericType 
                    &&
                    (
