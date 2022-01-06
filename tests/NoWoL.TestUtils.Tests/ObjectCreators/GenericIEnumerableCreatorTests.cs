@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using NoWoL.TestingUtilities.ExpectedExceptions;
@@ -31,7 +32,7 @@ namespace NoWoL.TestingUtilities.Tests.ObjectCreators
         [InlineData(typeof(ISomeInterface))]
         [InlineData(typeof(int))]
         [InlineData(typeof(int[]))]
-        [InlineData(typeof(System.Collections.IEnumerable))]
+        [InlineData(typeof(IEnumerable))]
         public void UnhandledTypes(Type type)
         {
             Assert.False(_sut.CanHandle(type));
@@ -47,7 +48,7 @@ namespace NoWoL.TestingUtilities.Tests.ObjectCreators
         public void CreateArrayForType(Type type)
         {
             var result = (Array)_sut.Create(type,
-                                            ArgumentsValidatorHelper.DefaultCreators);
+                                            ParametersValidatorHelper.DefaultCreators);
             Assert.Single(result);
 #pragma warning disable CA1062 // Validate arguments of public methods
             var elementType = type.GenericTypeArguments.Single();
@@ -65,57 +66,11 @@ namespace NoWoL.TestingUtilities.Tests.ObjectCreators
         public void CreateThrowsExceptionUnhandledTypes(Type type)
         {
             var ex = Assert.Throws<UnsupportedTypeException>(() => _sut.Create(type,
-                                                                               ArgumentsValidatorHelper.DefaultCreators));
+                                                                               ParametersValidatorHelper.DefaultCreators));
 #pragma warning disable CA1062 // Validate arguments of public methods
-            Assert.Equal("Expecting an IEnumerable<> type however received " + type.FullName, ex.Message);
+            Assert.Equal("Expecting an IEnumerable<> type however received " + type.FullName,
+                         ex.Message);
 #pragma warning restore CA1062 // Validate arguments of public methods
-        }
-
-        [Fact]
-        [Trait("Category",
-               "Unit")]
-        public void CanHandleThrowIfInputParametersAreInvalid()
-        {
-            var validator = ArgumentsValidatorHelper.GetMethodArgumentsValidator(new GenericIEnumerableCreator(), nameof(GenericIEnumerableCreator.CanHandle), methodArguments: new object[] { null });
-
-            validator.SetupParameter("type", ExpectedExceptionRules.NotNull)
-                     .Validate();
-        }
-
-        [Fact]
-        [Trait("Category",
-               "Unit")]
-        public void CreateThrowIfInputParametersAreInvalid()
-        {
-            var validator = ArgumentsValidatorHelper.GetMethodArgumentsValidator(new GenericIEnumerableCreator(), nameof(GenericIEnumerableCreator.Create), methodArguments: new object[] { typeof(IEnumerable<int>), ArgumentsValidatorHelper.DefaultCreators });
-
-            validator.SetupParameter("type", ExpectedExceptionRules.NotNull)
-                     .SetupParameter("objectCreators", ExpectedExceptionRules.NotNull)
-                     .Validate();
-        }
-
-        [Fact]
-        [Trait("Category",
-               "Unit")]
-        public void ValidateWithException()
-        {
-            var obj = new TestClass();
-
-            var validator = ArgumentsValidatorHelper.GetMethodArgumentsValidator(obj, nameof(TestClass.MethodToValidate));
-            validator.SetupParameter("paramO", ExpectedExceptionRules.NotNull, ExpectedExceptionRules.NotEmpty)
-                     .Validate();
-        }
-
-        [Fact]
-        [Trait("Category",
-               "Unit")]
-        public void ValidateWithoutException()
-        {
-            var obj = new TestClass();
-
-            var validator = ArgumentsValidatorHelper.GetMethodArgumentsValidator(obj, nameof(TestClass.MethodToValidate), methodArguments: new object[] { new List<int> { 3 } });
-            validator.SetupParameter("paramO", ExpectedExceptionRules.None)
-                     .Validate();
         }
 
         private class TestClass
@@ -135,6 +90,66 @@ namespace NoWoL.TestingUtilities.Tests.ObjectCreators
 
                 return null;
             }
+        }
+
+        [Fact]
+        [Trait("Category",
+               "Unit")]
+        public void CanHandleThrowIfInputParametersAreInvalid()
+        {
+            var validator = ParametersValidatorHelper.GetMethodParametersValidator(new GenericIEnumerableCreator(),
+                                                                                   nameof(GenericIEnumerableCreator.CanHandle),
+                                                                                   new object[] { null });
+
+            validator.SetupParameter("type",
+                                     ExpectedExceptionRules.NotNull)
+                     .Validate();
+        }
+
+        [Fact]
+        [Trait("Category",
+               "Unit")]
+        public void CreateThrowIfInputParametersAreInvalid()
+        {
+            var validator = ParametersValidatorHelper.GetMethodParametersValidator(new GenericIEnumerableCreator(),
+                                                                                   nameof(GenericIEnumerableCreator.Create),
+                                                                                   new object[] { typeof(IEnumerable<int>), ParametersValidatorHelper.DefaultCreators });
+
+            validator.SetupParameter("type",
+                                     ExpectedExceptionRules.NotNull)
+                     .SetupParameter("objectCreators",
+                                     ExpectedExceptionRules.NotNull)
+                     .Validate();
+        }
+
+        [Fact]
+        [Trait("Category",
+               "Unit")]
+        public void ValidateWithException()
+        {
+            var obj = new TestClass();
+
+            var validator = ParametersValidatorHelper.GetMethodParametersValidator(obj,
+                                                                                   nameof(TestClass.MethodToValidate));
+            validator.SetupParameter("paramO",
+                                     ExpectedExceptionRules.NotNull,
+                                     ExpectedExceptionRules.NotEmpty)
+                     .Validate();
+        }
+
+        [Fact]
+        [Trait("Category",
+               "Unit")]
+        public void ValidateWithoutException()
+        {
+            var obj = new TestClass();
+
+            var validator = ParametersValidatorHelper.GetMethodParametersValidator(obj,
+                                                                                   nameof(TestClass.MethodToValidate),
+                                                                                   new object[] { new List<int> { 3 } });
+            validator.SetupParameter("paramO",
+                                     ExpectedExceptionRules.None)
+                     .Validate();
         }
     }
 }

@@ -14,46 +14,47 @@ namespace NoWoL.TestingUtilities.Tests
     {
         public static MethodInfo GetMethodInfoWithNoParameters()
         {
-            return typeof(MethodsHolder).GetMethod(nameof(MethodsHolder.MethodWithNoParameters))!;
+            return typeof(MethodsHolder).GetMethod(nameof(MethodWithNoParameters))!;
         }
+
         public static ParameterInfo GetStringParameterInfo()
         {
-            return typeof(MethodsHolder).GetMethod(nameof(MethodsHolder.MethodWithOneString))!.GetParameters().Single();
+            return typeof(MethodsHolder).GetMethod(nameof(MethodWithOneString))!.GetParameters().Single();
         }
 
         public static ParameterInfo GetStringArrayParameterInfo()
         {
-            return typeof(MethodsHolder).GetMethod(nameof(MethodsHolder.MethodWithOneStringArray))!.GetParameters().Single();
+            return typeof(MethodsHolder).GetMethod(nameof(MethodWithOneStringArray))!.GetParameters().Single();
         }
 
         public static ParameterInfo GetStringListParameterInfo()
         {
-            return typeof(MethodsHolder).GetMethod(nameof(MethodsHolder.MethodWithOneStringList))!.GetParameters().Single();
+            return typeof(MethodsHolder).GetMethod(nameof(MethodWithOneStringList))!.GetParameters().Single();
         }
 
         public static ParameterInfo GetStringIEnumerableParameterInfo()
         {
-            return typeof(MethodsHolder).GetMethod(nameof(MethodsHolder.MethodWithOneStringIEnumerable))!.GetParameters().Single();
+            return typeof(MethodsHolder).GetMethod(nameof(MethodWithOneStringIEnumerable))!.GetParameters().Single();
         }
 
         public static ParameterInfo GetStringICollectionParameterInfo()
         {
-            return typeof(MethodsHolder).GetMethod(nameof(MethodsHolder.MethodWithOneStringICollection))!.GetParameters().Single();
+            return typeof(MethodsHolder).GetMethod(nameof(MethodWithOneStringICollection))!.GetParameters().Single();
         }
 
         public static ParameterInfo GetStringIListParameterInfo()
         {
-            return typeof(MethodsHolder).GetMethod(nameof(MethodsHolder.MethodWithOneStringIList))!.GetParameters().Single();
+            return typeof(MethodsHolder).GetMethod(nameof(MethodWithOneStringIList))!.GetParameters().Single();
         }
 
         public static ParameterInfo GetIntParameterInfo()
         {
-            return typeof(MethodsHolder).GetMethod(nameof(MethodsHolder.MethodWithOneInteger))!.GetParameters().Single();
+            return typeof(MethodsHolder).GetMethod(nameof(MethodWithOneInteger))!.GetParameters().Single();
         }
 
         public static ParameterInfo GetActionParameterInfo()
         {
-            return typeof(MethodsHolder).GetMethod(nameof(MethodsHolder.MethodWithOneAction))!.GetParameters().Single();
+            return typeof(MethodsHolder).GetMethod(nameof(MethodWithOneAction))!.GetParameters().Single();
         }
 
         public void MethodWithNoParameters()
@@ -84,7 +85,8 @@ namespace NoWoL.TestingUtilities.Tests
         { }
     }
 
-    public interface ISomeInterface { }
+    public interface ISomeInterface
+    { }
 
     [ExcludeFromCodeCoverage]
     public class ComplexTestClassObjectCreator : IObjectCreator
@@ -99,7 +101,7 @@ namespace NoWoL.TestingUtilities.Tests
             return new ComplexTestClass();
         }
     }
-    
+
     [ExcludeFromCodeCoverage]
     public class SimpleTestClass
     {
@@ -110,14 +112,16 @@ namespace NoWoL.TestingUtilities.Tests
                 throw new ArgumentNullException(nameof(param1));
             }
 
-            if (String.IsNullOrEmpty(param1))
+            if (string.IsNullOrEmpty(param1))
             {
-                throw new ArgumentException("Cannot be empty", nameof(param1));
+                throw new ArgumentException("Cannot be empty",
+                                            nameof(param1));
             }
 
-            if (String.IsNullOrWhiteSpace(param1))
+            if (string.IsNullOrWhiteSpace(param1))
             {
-                throw new ArgumentException("Cannot be empty or whitespace", nameof(param1));
+                throw new ArgumentException("Cannot be empty or whitespace",
+                                            nameof(param1));
             }
 
             return null;
@@ -130,14 +134,16 @@ namespace NoWoL.TestingUtilities.Tests
                 throw new ArgumentNullException(nameof(param1));
             }
 
-            if (String.IsNullOrEmpty(param1))
+            if (string.IsNullOrEmpty(param1))
             {
-                throw new ArgumentException("Cannot be empty", nameof(param1));
+                throw new ArgumentException("Cannot be empty",
+                                            nameof(param1));
             }
 
-            if (String.IsNullOrWhiteSpace(param1))
+            if (string.IsNullOrWhiteSpace(param1))
             {
-                throw new ArgumentException("Cannot be empty or whitespace", nameof(param1));
+                throw new ArgumentException("Cannot be empty or whitespace",
+                                            nameof(param1));
             }
 
             await Task.Delay(1).ConfigureAwait(false);
@@ -152,14 +158,16 @@ namespace NoWoL.TestingUtilities.Tests
                 throw new ArgumentNullException(nameof(param1));
             }
 
-            if (String.IsNullOrEmpty(param1))
+            if (string.IsNullOrEmpty(param1))
             {
-                throw new ArgumentException("Cannot be empty", nameof(param1));
+                throw new ArgumentException("Cannot be empty",
+                                            nameof(param1));
             }
 
-            if (String.IsNullOrWhiteSpace(param1))
+            if (string.IsNullOrWhiteSpace(param1))
             {
-                throw new ArgumentException("Cannot be empty or whitespace", nameof(param1));
+                throw new ArgumentException("Cannot be empty or whitespace",
+                                            nameof(param1));
             }
 
             await Task.Delay(1).ConfigureAwait(false);
@@ -289,14 +297,16 @@ namespace NoWoL.TestingUtilities.Tests
                 throw new ArgumentNullException(nameof(param1));
             }
 
-            if (String.IsNullOrEmpty(param1))
+            if (string.IsNullOrEmpty(param1))
             {
-                throw new ArgumentException("Cannot be empty", nameof(param1));
+                throw new ArgumentException("Cannot be empty",
+                                            nameof(param1));
             }
 
-            if (String.IsNullOrWhiteSpace(param1))
+            if (string.IsNullOrWhiteSpace(param1))
             {
-                throw new ArgumentException("Cannot be empty or whitespace", nameof(param1));
+                throw new ArgumentException("Cannot be empty or whitespace",
+                                            nameof(param1));
             }
 
             if (param2 == null)
@@ -311,7 +321,8 @@ namespace NoWoL.TestingUtilities.Tests
 
             if (param3.Count == 0)
             {
-                throw new ArgumentException("Cannot be empty", nameof(param3));
+                throw new ArgumentException("Cannot be empty",
+                                            nameof(param3));
             }
 
             if (param4 == null)
@@ -321,7 +332,8 @@ namespace NoWoL.TestingUtilities.Tests
 
             if (param4.Length == 0)
             {
-                throw new ArgumentException("Cannot be empty", nameof(param4));
+                throw new ArgumentException("Cannot be empty",
+                                            nameof(param4));
             }
 
             if (param5 == null)
@@ -331,23 +343,31 @@ namespace NoWoL.TestingUtilities.Tests
 
             if (!param5.Any())
             {
-                throw new ArgumentException("Cannot be empty", nameof(param5));
+                throw new ArgumentException("Cannot be empty",
+                                            nameof(param5));
             }
 
             return null;
         }
-        
-        public string MethodForDefaultRules(string param1, ISomeInterface param2, List<ISomeInterface> param3, ISomeInterface[] param4,
-                                            IEnumerable<ISomeInterface> param5, Dictionary<string, string> param6, int param7, ComplexTestClass param8)
+
+        public string MethodForDefaultRules(string param1,
+                                            ISomeInterface param2,
+                                            List<ISomeInterface> param3,
+                                            ISomeInterface[] param4,
+                                            IEnumerable<ISomeInterface> param5,
+                                            Dictionary<string, string> param6,
+                                            int param7,
+                                            ComplexTestClass param8)
         {
             if (param1 == null)
             {
                 throw new ArgumentNullException(nameof(param1));
             }
 
-            if (String.IsNullOrWhiteSpace(param1))
+            if (string.IsNullOrWhiteSpace(param1))
             {
-                throw new ArgumentException("Cannot be empty or whitespace", nameof(param1));
+                throw new ArgumentException("Cannot be empty or whitespace",
+                                            nameof(param1));
             }
 
             if (param2 == null)

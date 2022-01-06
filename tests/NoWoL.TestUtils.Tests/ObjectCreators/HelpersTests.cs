@@ -13,37 +13,10 @@ namespace NoWoL.TestingUtilities.Tests.ObjectCreators
         [Fact]
         [Trait("Category",
                "Unit")]
-        public void CreateListOfIntegers()
-        {
-            var result = CreatorHelpers.CreateList(typeof(int),
-                                            ArgumentsValidatorHelper.DefaultCreators) as IList;
-            Assert.NotNull(result);
-            Assert.Single(result);
-            Assert.Equal(0,
-                         result[0]);
-        }
-
-        [Fact]
-        [Trait("Category",
-               "Unit")]
-        public void CreateListThrowIfInputParametersAreInvalid()
-        {
-            var method = typeof(CreatorHelpers).GetMethod(nameof(CreatorHelpers.CreateList),
-                                                   BindingFlags.NonPublic | BindingFlags.Static);
-            var validator = ArgumentsValidatorHelper.GetMethodArgumentsValidator(null, method, methodArguments: new object[] { typeof(int), ArgumentsValidatorHelper.DefaultCreators });
-
-            validator.SetupParameter("type", ExpectedExceptionRules.NotNull)
-                     .SetupParameter("objectCreators", ExpectedExceptionRules.NotNull)
-                     .Validate();
-        }
-
-        [Fact]
-        [Trait("Category",
-               "Unit")]
         public void CreateArrayOfIntegers()
         {
             var result = CreatorHelpers.CreateArray(typeof(int),
-                                             ArgumentsValidatorHelper.DefaultCreators) as int[];
+                                                    ParametersValidatorHelper.DefaultCreators) as int[];
             Assert.NotNull(result);
             Assert.Single(result);
             Assert.Equal(0,
@@ -56,11 +29,15 @@ namespace NoWoL.TestingUtilities.Tests.ObjectCreators
         public void CreateArrayThrowIfInputParametersAreInvalid()
         {
             var method = typeof(CreatorHelpers).GetMethod(nameof(CreatorHelpers.CreateArray),
-                                                   BindingFlags.NonPublic | BindingFlags.Static);
-            var validator = ArgumentsValidatorHelper.GetMethodArgumentsValidator(null, method, methodArguments: new object[] { typeof(int), ArgumentsValidatorHelper.DefaultCreators });
+                                                          BindingFlags.NonPublic | BindingFlags.Static);
+            var validator = ParametersValidatorHelper.GetMethodParametersValidator(null,
+                                                                                   method,
+                                                                                   new object[] { typeof(int), ParametersValidatorHelper.DefaultCreators });
 
-            validator.SetupParameter("type", ExpectedExceptionRules.NotNull)
-                     .SetupParameter("objectCreators", ExpectedExceptionRules.NotNull)
+            validator.SetupParameter("type",
+                                     ExpectedExceptionRules.NotNull)
+                     .SetupParameter("objectCreators",
+                                     ExpectedExceptionRules.NotNull)
                      .Validate();
         }
 
@@ -70,7 +47,7 @@ namespace NoWoL.TestingUtilities.Tests.ObjectCreators
         public void CreateItemFromTypeCreatesAnInteger()
         {
             var result = (int)CreatorHelpers.CreateItemFromType(typeof(int),
-                                                         ArgumentsValidatorHelper.DefaultCreators);
+                                                                ParametersValidatorHelper.DefaultCreators);
             Assert.Equal(0,
                          result);
         }
@@ -81,7 +58,7 @@ namespace NoWoL.TestingUtilities.Tests.ObjectCreators
         public void CreateItemFromTypeThrowForUnknownType()
         {
             var ex = Assert.Throws<NotSupportedException>(() => CreatorHelpers.CreateItemFromType(typeof(ComplexTestClass),
-                                                                                           ArgumentsValidatorHelper.DefaultCreators));
+                                                                                                  ParametersValidatorHelper.DefaultCreators));
             Assert.Equal("No object creators have been registered to handle type '" + typeof(ComplexTestClass).FullName + "'",
                          ex.Message);
         }
@@ -92,36 +69,47 @@ namespace NoWoL.TestingUtilities.Tests.ObjectCreators
         public void CreateItemFromTypeThrowIfInputParametersAreInvalid()
         {
             var method = typeof(CreatorHelpers).GetMethod(nameof(CreatorHelpers.CreateItemFromType),
-                                                   BindingFlags.NonPublic | BindingFlags.Static);
-            var validator = ArgumentsValidatorHelper.GetMethodArgumentsValidator(null, method, methodArguments: new object[] { typeof(int), ArgumentsValidatorHelper.DefaultCreators });
+                                                          BindingFlags.NonPublic | BindingFlags.Static);
+            var validator = ParametersValidatorHelper.GetMethodParametersValidator(null,
+                                                                                   method,
+                                                                                   new object[] { typeof(int), ParametersValidatorHelper.DefaultCreators });
 
-            validator.SetupParameter("type", ExpectedExceptionRules.NotNull)
-                     .SetupParameter("objectCreators", ExpectedExceptionRules.NotNull)
+            validator.SetupParameter("type",
+                                     ExpectedExceptionRules.NotNull)
+                     .SetupParameter("objectCreators",
+                                     ExpectedExceptionRules.NotNull)
                      .Validate();
         }
 
         [Fact]
         [Trait("Category",
                "Unit")]
-        public void TryCreateObjectThrowsIfTypeIsNull()
+        public void CreateListOfIntegers()
         {
-            var ex = Assert.Throws<ArgumentNullException>(() => CreatorHelpers.TryCreateObject(null,
-                                                                                        ArgumentsValidatorHelper.DefaultCreators,
-                                                                                        out _));
-            Assert.Equal("type",
-                         ex.ParamName);
+            var result = CreatorHelpers.CreateList(typeof(int),
+                                                   ParametersValidatorHelper.DefaultCreators) as IList;
+            Assert.NotNull(result);
+            Assert.Single(result);
+            Assert.Equal(0,
+                         result[0]);
         }
 
         [Fact]
         [Trait("Category",
                "Unit")]
-        public void TryCreateObjectThrowsIfObjectCreatorsIsNull()
+        public void CreateListThrowIfInputParametersAreInvalid()
         {
-            var ex = Assert.Throws<ArgumentNullException>(() => CreatorHelpers.TryCreateObject(typeof(int),
-                                                                                        null,
-                                                                                        out _));
-            Assert.Equal("objectCreators",
-                         ex.ParamName);
+            var method = typeof(CreatorHelpers).GetMethod(nameof(CreatorHelpers.CreateList),
+                                                          BindingFlags.NonPublic | BindingFlags.Static);
+            var validator = ParametersValidatorHelper.GetMethodParametersValidator(null,
+                                                                                   method,
+                                                                                   new object[] { typeof(int), ParametersValidatorHelper.DefaultCreators });
+
+            validator.SetupParameter("type",
+                                     ExpectedExceptionRules.NotNull)
+                     .SetupParameter("objectCreators",
+                                     ExpectedExceptionRules.NotNull)
+                     .Validate();
         }
 
         [Fact]
@@ -130,8 +118,8 @@ namespace NoWoL.TestingUtilities.Tests.ObjectCreators
         public void TryCreateObjectReturnsFalseIfObjectCannotBeCreated()
         {
             var result = CreatorHelpers.TryCreateObject(typeof(int),
-                                                 new List<IObjectCreator>(),
-                                                 out var obj);
+                                                        new List<IObjectCreator>(),
+                                                        out var obj);
             Assert.False(result);
             Assert.Null(obj);
         }
@@ -142,11 +130,35 @@ namespace NoWoL.TestingUtilities.Tests.ObjectCreators
         public void TryCreateObjectReturnsTrueIfObjectCanBeCreated()
         {
             var result = CreatorHelpers.TryCreateObject(typeof(int),
-                                                 new List<IObjectCreator> { new ValueTypeCreator() },
-                                                 out var obj);
+                                                        new List<IObjectCreator> { new ValueTypeCreator() },
+                                                        out var obj);
             Assert.True(result);
-            Assert.Equal(0, 
+            Assert.Equal(0,
                          obj);
+        }
+
+        [Fact]
+        [Trait("Category",
+               "Unit")]
+        public void TryCreateObjectThrowsIfObjectCreatorsIsNull()
+        {
+            var ex = Assert.Throws<ArgumentNullException>(() => CreatorHelpers.TryCreateObject(typeof(int),
+                                                                                               null,
+                                                                                               out _));
+            Assert.Equal("objectCreators",
+                         ex.ParamName);
+        }
+
+        [Fact]
+        [Trait("Category",
+               "Unit")]
+        public void TryCreateObjectThrowsIfTypeIsNull()
+        {
+            var ex = Assert.Throws<ArgumentNullException>(() => CreatorHelpers.TryCreateObject(null,
+                                                                                               ParametersValidatorHelper.DefaultCreators,
+                                                                                               out _));
+            Assert.Equal("type",
+                         ex.ParamName);
         }
 
         // TryCreateObject
