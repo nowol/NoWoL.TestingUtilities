@@ -98,7 +98,7 @@ public class TestClassObjectCreator : IObjectCreator
 
         if (CanHandle(type))
         {
-            return new TestClass("Text", CreatorHelpers.CreateItemFromType(typeof(IMyInterface))); // interfaces will be handled by the Moq object creator
+            return new TestClass("Text", CreatorHelpers.CreateItemFromType(typeof(IMyInterface), objectCreators)); // interfaces will be handled by the Moq object creator
         }
 
         throw new NotSupportedException("Expecting a List<> type however received " + type.FullName);

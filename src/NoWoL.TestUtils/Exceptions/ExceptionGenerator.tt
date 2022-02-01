@@ -6,21 +6,45 @@
 <#@ output extension=".cs" #>
 <#@ import namespace="System.CodeDom" #>
 <#@ import namespace="System.Text.RegularExpressions" #>using System;
-using NoWoL.TestingUtilities.Exceptions;
 // ReSharper disable CheckNamespace
 #pragma warning disable IDE0079 // Remove unnecessary suppression
+#pragma warning disable IDE0002 // Name can be simplified
 
 <#
-CreateException("NoWoL.TestingUtilities.ParameterRuleException", standardMessage: "Rule '{string ruleName}' for parameter '{string paramName}' was not respected.{<AddSpaceWhenRequired>string additionalReason}");
-CreateException("NoWoL.TestingUtilities.UnconfiguredArgumentsException", standardMessage: "The following arguments have not been configured: {<JoinComma>System.Collections.Generic.IEnumerable<string> missingArguments}.");
-CreateException("NoWoL.TestingUtilities.MissingObjectCreatorException", standardMessage: "Could not find an IObjectCreator for {<TypeFullName>Type type}.");
-CreateException("NoWoL.TestingUtilities.UnsupportedInvalidTypeException", standardMessage: "Unable to generate an invalid value for type '{<TypeFullName>Type type}'.");
-CreateException("NoWoL.TestingUtilities.UnsupportedTypeException");
+	RegisterTypeFormatter("TypeFullName",
+	                      "NoWoL.TestingUtilities.Exceptions.ExceptionFormatters.TypeFullNameFormatter");
+	RegisterTypeFormatter("JoinComma",
+	                      "NoWoL.TestingUtilities.Exceptions.ExceptionFormatters.JoinCommaFormatter");
+	RegisterTypeFormatter("AddSpaceWhenRequired",
+	                      "NoWoL.TestingUtilities.Exceptions.ExceptionFormatters.AddSpaceWhenRequiredFormatter");
+
+	CreateException("NoWoL.TestingUtilities.ParameterRuleException",
+	                standardMessage: "Rule '{string ruleName}' for parameter '{string paramName}' was not respected.{<AddSpaceWhenRequired>string additionalReason}");
+	CreateException("NoWoL.TestingUtilities.UnconfiguredArgumentsException",
+	                standardMessage: "The following arguments have not been configured: {<JoinComma>System.Collections.Generic.IEnumerable<string> missingArguments}.");
+	CreateException("NoWoL.TestingUtilities.MissingObjectCreatorException",
+	                standardMessage: "Could not find an IObjectCreator for {<TypeFullName>Type type}.");
+	CreateException("NoWoL.TestingUtilities.UnsupportedInvalidTypeException",
+	                standardMessage: "Unable to generate an invalid value for type '{<TypeFullName>Type type}'.");
+	CreateException("NoWoL.TestingUtilities.UnsupportedTypeException");
 #>
 
 <#+
+	private readonly Dictionary<string, string> _formatters = new Dictionary<string, string>();
 
-    public void CreateException(string fullName, string standardMessage = null)
+	public void RegisterTypeFormatter(string name, string implementationName)
+	{
+		if (string.IsNullOrWhiteSpace(name))
+			throw new ArgumentException("Value cannot be null or whitespace.",
+			                            nameof(name));
+		if (string.IsNullOrWhiteSpace(implementationName))
+			throw new ArgumentException("Value cannot be null or whitespace.",
+			                            nameof(implementationName));
+		_formatters.Add(name,
+		                implementationName);
+	}
+
+	public void CreateException(string fullName, string standardMessage = null)
     {
         var parts = fullName.Split('.');
         var className = parts.Last();
@@ -30,6 +54,7 @@ CreateException("NoWoL.TestingUtilities.UnsupportedTypeException");
 #>
 namespace <#= ns #>
 {
+    // This is generated code
     [Serializable]
     [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
@@ -99,8 +124,18 @@ namespace <#= ns #>
 
                 if (match.Groups["Formatter"].Success)
                 {
-                    var formatter = match.Groups["Formatter"].Value.Trim(new [] { '<', '>' });
-                    return "{ExceptionFormatters." + formatter + "Formatter(" + name + ")}";
+                    var formatterName = match.Groups["Formatter"].Value.Trim(new [] { '<', '>' });
+
+	                if (_formatters.ContainsKey(formatterName))
+	                {
+		                formatterName = _formatters[formatterName];
+	                }
+	                else
+	                {
+		                formatterName += "_NOT_REGISTERED";
+	                }
+
+                    return "{" + formatterName + "(" + name + ")}";
                 }
                 
                 return "{" + name + "}";

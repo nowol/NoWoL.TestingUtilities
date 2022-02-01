@@ -1,10 +1,11 @@
 ﻿using System;
-using NoWoL.TestingUtilities.Exceptions;
 // ReSharper disable CheckNamespace
 #pragma warning disable IDE0079 // Remove unnecessary suppression
+#pragma warning disable IDE0002 // Name can be simplified
 
 namespace NoWoL.TestingUtilities
 {
+    // This is generated code
     [Serializable]
     [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
@@ -54,13 +55,14 @@ namespace NoWoL.TestingUtilities
 #pragma warning restore CS1573 // Parameter has no matching param tag in the XML comment (but other parameters do)
         {
 #pragma warning disable CA1062 // Validate arguments of public methods
-            return new ParameterRuleException($"Rule '{ruleName}' for parameter '{paramName}' was not respected.{ExceptionFormatters.AddSpaceWhenRequiredFormatter(additionalReason)}", innerException);
+            return new ParameterRuleException($"Rule '{ruleName}' for parameter '{paramName}' was not respected.{NoWoL.TestingUtilities.Exceptions.ExceptionFormatters.AddSpaceWhenRequiredFormatter(additionalReason)}", innerException);
 #pragma warning restore CA1062 // Validate arguments of public methods
         }
     }
 }
 namespace NoWoL.TestingUtilities
 {
+    // This is generated code
     [Serializable]
     [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
@@ -110,13 +112,14 @@ namespace NoWoL.TestingUtilities
 #pragma warning restore CS1573 // Parameter has no matching param tag in the XML comment (but other parameters do)
         {
 #pragma warning disable CA1062 // Validate arguments of public methods
-            return new UnconfiguredArgumentsException($"The following arguments have not been configured: {ExceptionFormatters.JoinCommaFormatter(missingArguments)}.", innerException);
+            return new UnconfiguredArgumentsException($"The following arguments have not been configured: {NoWoL.TestingUtilities.Exceptions.ExceptionFormatters.JoinCommaFormatter(missingArguments)}.", innerException);
 #pragma warning restore CA1062 // Validate arguments of public methods
         }
     }
 }
 namespace NoWoL.TestingUtilities
 {
+    // This is generated code
     [Serializable]
     [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
@@ -166,13 +169,14 @@ namespace NoWoL.TestingUtilities
 #pragma warning restore CS1573 // Parameter has no matching param tag in the XML comment (but other parameters do)
         {
 #pragma warning disable CA1062 // Validate arguments of public methods
-            return new MissingObjectCreatorException($"Could not find an IObjectCreator for {ExceptionFormatters.TypeFullNameFormatter(type)}.", innerException);
+            return new MissingObjectCreatorException($"Could not find an IObjectCreator for {NoWoL.TestingUtilities.Exceptions.ExceptionFormatters.TypeFullNameFormatter(type)}.", innerException);
 #pragma warning restore CA1062 // Validate arguments of public methods
         }
     }
 }
 namespace NoWoL.TestingUtilities
 {
+    // This is generated code
     [Serializable]
     [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
@@ -222,13 +226,14 @@ namespace NoWoL.TestingUtilities
 #pragma warning restore CS1573 // Parameter has no matching param tag in the XML comment (but other parameters do)
         {
 #pragma warning disable CA1062 // Validate arguments of public methods
-            return new UnsupportedInvalidTypeException($"Unable to generate an invalid value for type '{ExceptionFormatters.TypeFullNameFormatter(type)}'.", innerException);
+            return new UnsupportedInvalidTypeException($"Unable to generate an invalid value for type '{NoWoL.TestingUtilities.Exceptions.ExceptionFormatters.TypeFullNameFormatter(type)}'.", innerException);
 #pragma warning restore CA1062 // Validate arguments of public methods
         }
     }
 }
 namespace NoWoL.TestingUtilities
 {
+    // This is generated code
     [Serializable]
     [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
