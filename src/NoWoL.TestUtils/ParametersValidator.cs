@@ -19,6 +19,7 @@ namespace NoWoL.TestingUtilities
         private readonly object[] _methodParameters;
         private readonly Dictionary<string, IExpectedExceptionRule[]> _expectedExceptions = new();
         private readonly ParameterInfo[] _parameters;
+        private readonly Dictionary<int, object> _overriddenMethodParameters = new();
 
         /// <summary>
         /// Creates an instance of the <see cref="ParametersValidator"/> class.
@@ -124,7 +125,39 @@ namespace NoWoL.TestingUtilities
             return this;
         }
 
-        private void ValidateParameterNameAndRules(string paramName, IExpectedExceptionRule[] rules)
+        /// <summary>
+        /// Set the value of a parameter for testing the parameters of the target method
+        /// </summary>
+        /// <remarks>This method is useful because it can allow a developer to avoid specifying all parameter values of a method and only specify the one that is missing an <see cref="IObjectCreator"/>.</remarks>
+        /// <param name="paramName">Name of the parameter to validate</param>
+        /// <param name="value">Value of the parameter</param>
+        /// <returns>This instance of <see cref="ParametersValidator"/> to allow chaining.</returns>
+        public ParametersValidator SetParameterValue(string paramName, object value)
+        {
+            ValidateParameterName(paramName);
+
+            if (_methodParameters != null)
+            {
+                throw UseMethodParametersValuesInsteadException.Create();
+            }
+
+            for (var i = 0; i < _parameters.Length; i++)
+            {
+                var parameterInfo = _parameters[i];
+
+                if (String.Equals(parameterInfo.Name,
+                                  paramName,
+                                  StringComparison.Ordinal))
+                {
+                    _overriddenMethodParameters[i] = value;
+                    break;
+                }
+            }
+
+            return this;
+        }
+
+        private void ValidateParameterName(string paramName)
         {
             if (paramName == null)
             {
@@ -144,6 +177,11 @@ namespace NoWoL.TestingUtilities
                 throw new ArgumentException($"Parameter '{paramName}' does not exists on the method.",
                                             nameof(paramName));
             }
+        }
+
+        private void ValidateParameterNameAndRules(string paramName, IExpectedExceptionRule[] rules)
+        {
+            ValidateParameterName(paramName);
 
             if (rules == null)
             {
@@ -208,6 +246,13 @@ namespace NoWoL.TestingUtilities
                         }
                         else
                         {
+                            if (TryGetAwaitableTask((MethodInfo)_method,
+                                                    arguments,
+                                                    out var task))
+                            {
+                                throw new NotSupportedException("The requested method does returns a Task. Please call the ValidateAsync method.");
+                            }
+
                             _method.Invoke(_targetObject,
                                            arguments);
                         }
@@ -343,16 +388,28 @@ namespace NoWoL.TestingUtilities
         {
             var result = new List<object>();
 
-            foreach (var parameterInfo in _method.GetParameters())
+            for (var i = 0; i < _method.GetParameters().Length; i++)
             {
-                bool handled = CreatorHelpers.TryCreateObject(parameterInfo.ParameterType, _objectCreators, out var createdObject);
-                if (!handled)
+                var parameterInfo = _method.GetParameters()[i];
+
+                if (_overriddenMethodParameters.ContainsKey(i))
                 {
-                    throw  new Exception("Could not find an IObjectCreator for " + parameterInfo.ParameterType.FullName);
+                    result.Add(_overriddenMethodParameters[i]);
                 }
                 else
                 {
-                    result.Add(createdObject);
+                    bool handled = CreatorHelpers.TryCreateObject(parameterInfo.ParameterType,
+                                                                  _objectCreators,
+                                                                  out var createdObject);
+
+                    if (!handled)
+                    {
+                        throw new Exception("Could not find an IObjectCreator for " + parameterInfo.ParameterType.FullName);
+                    }
+                    else
+                    {
+                        result.Add(createdObject);
+                    }
                 }
             }
 

@@ -298,5 +298,87 @@ namespace NoWoL.TestingUtilities.Tests
                                      ExpectedExceptionRules.None)
                      .Validate();
         }
+
+        [Fact]
+        [Trait("Category",
+               "Unit")]
+        public void SetParameterValueConfiguresTheValueUsedForTesting()
+        {
+            var obj = new SimpleTestClass();
+            var method = typeof(SimpleTestClass).GetMethod(nameof(SimpleTestClass.MethodWithConcreteClassWithRules));
+
+            var validator = ParametersValidatorHelper.GetMethodParametersValidator(obj,
+                                                                                   method);
+            validator.SetupAll(ParametersValidator.DefaultRules)
+                     .SetParameterValue("paramO", new ComplexTestClass())
+                     .Validate();
+        }
+
+        [Fact]
+        [Trait("Category",
+               "Unit")]
+        public void SetParameterValueCannotOverrideValuesFromMethodParameters()
+        {
+            var obj = new SimpleTestClass();
+            var method = typeof(SimpleTestClass).GetMethod(nameof(SimpleTestClass.MethodWithConcreteClassWithRules));
+
+            var validator = ParametersValidatorHelper.GetMethodParametersValidator(obj,
+                                                                                   method,
+                                                                                   new object[]
+                                                                                   {
+                                                                                       new ComplexTestClass()
+                                                                                   });
+
+            Assert.Throws<UseMethodParametersValuesInsteadException>(() => validator.SetupAll(ParametersValidator.DefaultRules)
+                                                                                    .SetParameterValue("paramO",
+                                                                                                       null)
+                                                                                    .Validate());
+        }
+
+        [Fact]
+        [Trait("Category",
+               "Unit")]
+        public void ValidateInputParametersForSetParameterValue()
+        {
+            var method = typeof(ComplexTestClass).GetMethod(nameof(ComplexTestClass.SomeMethodWith2Parameters));
+            var validator = ParametersValidatorHelper.GetMethodParametersValidator(new ParametersValidator(new ComplexTestClass(),
+                                                                                                           method,
+                                                                                                           null,
+                                                                                                           ParametersValidatorHelper.DefaultCreators),
+                                                                                   nameof(ParametersValidator.SetParameterValue));
+
+            var sut = ParametersValidatorHelper.GetMethodParametersValidator(validator,
+                                                                             nameof(ParametersValidator.SetParameterValue));
+
+            sut.SetupAll(ParametersValidator.DefaultRules)
+               .SetParameterValue("paramName", "paramName")
+               .SetParameterValue("value", 3)
+               .UpdateParameter("value",
+                                ExpectedExceptionRules.None).Validate();
+        }
+
+        [Fact]
+        [Trait("Category",
+               "Unit")]
+        public void SetParameterValueThrowsIfParamNameCannotBeFound()
+        {
+            var method = typeof(ComplexTestClass).GetMethod(nameof(ComplexTestClass.SomeMethodWith2Parameters));
+            var validator = ParametersValidatorHelper.GetMethodParametersValidator(new ParametersValidator(new ComplexTestClass(),
+                                                                                                           method,
+                                                                                                           null,
+                                                                                                           ParametersValidatorHelper.DefaultCreators),
+                                                                                   nameof(ParametersValidator.SetParameterValue));
+
+            var sut = ParametersValidatorHelper.GetMethodParametersValidator(validator,
+                                                                             nameof(ParametersValidator.SetParameterValue));
+
+            var ex = Assert.Throws<ArgumentException>(() => sut.SetupAll(ParametersValidator.DefaultRules)
+                                                               .SetParameterValue("SomeParam",
+                                                                                  3));
+            Assert.Equal("paramName",
+                         ex.ParamName);
+            Assert.Equal("Parameter 'SomeParam' does not exists on the method. (Parameter 'paramName')",
+                         ex.Message);
+        }
     }
 }

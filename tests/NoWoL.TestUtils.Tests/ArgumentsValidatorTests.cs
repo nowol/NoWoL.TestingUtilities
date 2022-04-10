@@ -534,6 +534,30 @@ namespace NoWoL.TestingUtilities.Tests
         [Fact]
         [Trait("Category",
                "Unit")]
+        public void ValidateThrowsBecauseOfAsyncMethod()
+        {
+            var method = typeof(SimpleTestClass).GetMethod(nameof(SimpleTestClass.MethodWithStringValidationAsync));
+            var parameters = new object[]
+                             {
+                                 "Freddie"
+                             };
+            var sut = new ParametersValidator(new SimpleTestClass(),
+                                              method,
+                                              parameters,
+                                              ParametersValidatorHelper.DefaultCreators);
+
+            var ex = Assert.Throws<NotSupportedException>(() => sut.SetupParameter("param1",
+                                                                                   ExpectedExceptionRules.NotNull,
+                                                                                   ExpectedExceptionRules.NotEmptyOrWhiteSpace)
+                                                                   .Validate());
+
+            Assert.Equal("The requested method does returns a Task. Please call the ValidateAsync method.",
+                         ex.Message);
+        }
+
+        [Fact]
+        [Trait("Category",
+               "Unit")]
         public async Task ValidateAsyncThrowsIfNoParametersWereConfigured()
         {
             var method = typeof(ComplexTestClass).GetMethod(nameof(ComplexTestClass.SomeMethod));
