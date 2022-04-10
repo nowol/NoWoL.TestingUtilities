@@ -290,6 +290,45 @@ namespace NoWoL.TestingUtilities.Tests
     [ExcludeFromCodeCoverage]
     public class ComplexTestClass
     {
+        public string SomeMethodWith2Parameters(string param1, string param2)
+        {
+            if (param1 == null)
+            {
+                throw new ArgumentNullException(nameof(param1));
+            }
+
+            if (string.IsNullOrEmpty(param1))
+            {
+                throw new ArgumentException("Cannot be empty",
+                                            nameof(param1));
+            }
+
+            if (string.IsNullOrWhiteSpace(param1))
+            {
+                throw new ArgumentException("Cannot be empty or whitespace",
+                                            nameof(param1));
+            }
+
+            if (param2 == null)
+            {
+                throw new ArgumentNullException(nameof(param2));
+            }
+
+            if (string.IsNullOrEmpty(param2))
+            {
+                throw new ArgumentException("Cannot be empty",
+                                            nameof(param2));
+            }
+
+            if (string.IsNullOrWhiteSpace(param2))
+            {
+                throw new ArgumentException("Cannot be empty or whitespace",
+                                            nameof(param2));
+            }
+
+            return null;
+        }
+
         public string SomeMethod(string param1, ISomeInterface param2, List<ISomeInterface> param3, ISomeInterface[] param4, IEnumerable<ISomeInterface> param5)
         {
             if (param1 == null)
