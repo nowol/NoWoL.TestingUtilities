@@ -129,6 +129,20 @@ var validator = ParametersValidatorHelper.GetMethodParametersValidator(obj,
 ...
 ```
 
+### Overriding default values
+
+Specifying the method parameters when building the validator is great when most of the parameters require custom creation. It can be heavy to use if you only have one value that requires custom creation. You can use `SetParameterValue` method to help with this scenario: you can create your validator without specifying `methodParameters` and use `SetParameterValue` to override the default value for one or many parameters.
+
+> Note: You cannot mix `methodParameters` and `SetParameterValue`.
+
+```csharp
+var obj = new TestClass();
+var validator = ParametersValidatorHelper.GetMethodParametersValidator(obj, nameof(TestClass.MyMethod));
+validator.SetupAll(ParametersValidator.DefaultRules) // Use the default rules or define your own
+         .SetParameterValue("theParameterName", new ComplexType(1,2,3)) // Change the default value when validating
+         .Validate();
+```
+
 ### Exception Validation Rules
 
 The library comes with the most common validation rules for no exception, not empty, not empty or white-space, not null and specific invalid value. The `ExpectedExceptionRules` class holds instances of these rules.
