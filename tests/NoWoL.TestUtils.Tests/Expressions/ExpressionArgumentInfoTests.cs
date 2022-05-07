@@ -10,8 +10,10 @@ namespace NoWoL.TestingUtilities.Tests.Expressions
                "Unit")]
         public void SettingTheNameAllowsUsToReadItBack()
         {
-            var sut = new ExpressionArgumentInfo();
-            sut.Name = "Freddie";
+            var sut = new ExpressionArgumentInfo
+                      {
+                          Name = "Freddie"
+                      };
             Assert.Equal("Freddie",
                          sut.Name);
         }
@@ -21,8 +23,10 @@ namespace NoWoL.TestingUtilities.Tests.Expressions
                "Unit")]
         public void SettingTheValueAllowsUsToReadItBack()
         {
-            var sut = new ExpressionArgumentInfo();
-            sut.Value = "Freddie";
+            var sut = new ExpressionArgumentInfo
+                      {
+                          Value = "Freddie"
+                      };
             Assert.Equal("Freddie",
                          sut.Value);
         }

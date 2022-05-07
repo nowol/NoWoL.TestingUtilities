@@ -24,7 +24,7 @@ namespace NoWoL.TestingUtilities
                                                                       new GenericIEnumerableCreator(),
                                                                       new GenericListCreator(),
                                                                       new GenericICollectionCreator(),
-                                                                      new MoqInterfaceCreator(),
+                                                                      new ProxyInterfaceCreator(),
                                                                       new ValueTypeCreator()
                                                                   };
 

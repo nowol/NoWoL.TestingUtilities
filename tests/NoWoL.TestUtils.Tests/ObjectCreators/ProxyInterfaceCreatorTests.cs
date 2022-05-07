@@ -1,4 +1,5 @@
 ﻿using System;
+using Castle.DynamicProxy;
 using Moq;
 using NoWoL.TestingUtilities.ExpectedExceptions;
 using NoWoL.TestingUtilities.ObjectCreators;
@@ -6,9 +7,9 @@ using Xunit;
 
 namespace NoWoL.TestingUtilities.Tests.ObjectCreators
 {
-    public class MoqInterfaceCreatorTests
+    public class ProxyInterfaceCreatorTests
     {
-        private readonly MoqInterfaceCreator _sut = new();
+        private readonly ProxyInterfaceCreator _sut = new();
 
         [Theory]
         [Trait("Category",
@@ -70,8 +71,8 @@ namespace NoWoL.TestingUtilities.Tests.ObjectCreators
                "Unit")]
         public void CanHandleThrowIfInputParametersAreInvalid()
         {
-            var validator = ParametersValidatorHelper.GetMethodParametersValidator(new MoqInterfaceCreator(),
-                                                                                   nameof(MoqInterfaceCreator.CanHandle),
+            var validator = ParametersValidatorHelper.GetMethodParametersValidator(new ProxyInterfaceCreator(),
+                                                                                   nameof(ProxyInterfaceCreator.CanHandle),
                                                                                    new object[] { null });
 
             validator.SetupParameter("type",
@@ -82,12 +83,12 @@ namespace NoWoL.TestingUtilities.Tests.ObjectCreators
         [Fact]
         [Trait("Category",
                "Unit")]
-        public void CreateMockOfInterface()
+        public void CreateCastleProxyOfInterface()
         {
             var result = _sut.Create(typeof(ISomeInterface),
                                      null) as ISomeInterface;
-            var mock = Mock.Get(result);
-            Assert.NotNull(mock);
+
+            Assert.True(ProxyUtil.IsProxy(result));
         }
 
         [Fact]
@@ -95,8 +96,8 @@ namespace NoWoL.TestingUtilities.Tests.ObjectCreators
                "Unit")]
         public void CreateThrowIfInputParametersAreInvalid()
         {
-            var validator = ParametersValidatorHelper.GetMethodParametersValidator(new MoqInterfaceCreator(),
-                                                                                   nameof(MoqInterfaceCreator.Create),
+            var validator = ParametersValidatorHelper.GetMethodParametersValidator(new ProxyInterfaceCreator(),
+                                                                                   nameof(ProxyInterfaceCreator.Create),
                                                                                    new object[] { typeof(ISomeInterface), null });
 
             validator.SetupParameter("type",
