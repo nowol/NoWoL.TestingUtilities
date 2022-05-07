@@ -37,8 +37,10 @@ namespace NoWoL.TestingUtilities.Tests.Expressions
                "Unit")]
         public void SettingTheMethodNameAllowsUsToReadItBack()
         {
-            var sut = new ExpressionMethodInfo();
-            sut.MethodName = "Freddie";
+            var sut = new ExpressionMethodInfo
+                      {
+                          MethodName = "Freddie"
+                      };
             Assert.Equal("Freddie",
                          sut.MethodName);
         }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
+using Castle.DynamicProxy;
 using Moq;
 using Xunit;
 
@@ -16,18 +17,9 @@ namespace NoWoL.TestingUtilities.Tests
                 Assert.IsType(expectedType,
                               value);
             }
-            else
+            else if (ProxyUtil.IsProxyType(value.GetType()))
             {
-                var getMethod = typeof(Mock).GetMethod(nameof(Mock.Get),
-                                                       BindingFlags.Static | BindingFlags.Public);
-                var genMethod = getMethod!.MakeGenericMethod(expectedType);
-
-                var underlyingMock = genMethod.Invoke(null,
-                                                      new[] { value });
-
-                Assert.True(underlyingMock!.GetType().IsGenericType);
-                Assert.Equal(expectedType,
-                             underlyingMock.GetType().GenericTypeArguments.Single());
+                Assert.True(expectedType.IsInstanceOfType(value));
             }
         }
     }

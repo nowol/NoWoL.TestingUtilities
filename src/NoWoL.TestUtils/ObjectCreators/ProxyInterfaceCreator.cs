@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using Moq;
+using System.Diagnostics.CodeAnalysis;
+using Castle.DynamicProxy;
 
 namespace NoWoL.TestingUtilities.ObjectCreators
 {
     /// <summary>
     /// Provides a way to create instances of an interface using a Mock&lt;&gt; object
     /// </summary>
-    public class MoqInterfaceCreator : IObjectCreator
+    public class ProxyInterfaceCreator : IObjectCreator
 	{
+        private static readonly ProxyGenerator InterfaceInstanceGenerator = new();
+
         /// <summary>
         /// Determines whether this instance can create the specified object type.
         /// </summary>
@@ -39,10 +42,32 @@ namespace NoWoL.TestingUtilities.ObjectCreators
 
             if (CanHandle(type))
             {
-				return type.GetObjectMock(MockBehavior.Loose);
+                return InterfaceInstanceGenerator.CreateInterfaceProxyWithoutTarget(type,
+                                                                                    NoopInterceptor.Instance);
 			}
 
             throw new UnsupportedTypeException("Expecting an interface however received " + type.FullName);
-		}
-	}
+        }
+
+        /// <summary>
+        /// Interface interceptor that does nothing
+        /// </summary>
+        [Serializable]
+        [ExcludeFromCodeCoverage]
+        private class NoopInterceptor : IInterceptor
+        {
+            /// <summary>
+            /// Thread safe instance of <see cref="NoopInterceptor"/>
+            /// </summary>
+            public static readonly NoopInterceptor Instance = new();
+
+            /// <summary>
+            /// Does nothing
+            /// </summary>
+            /// <param name="invocation"></param>
+            public void Intercept(IInvocation invocation)
+            {
+            }
+        }
+    }
 }

@@ -13,12 +13,16 @@ namespace NoWoL.TestingUtilities.Tests.Expressions
         {
             public int Number { get; set; }
 
+#pragma warning disable IDE0060 // Remove unused parameter
             public int SomeMethod(int i, string s, double d = 0)
+#pragma warning restore IDE0060 // Remove unused parameter
             {
                 return default;
             }
 
+#pragma warning disable IDE0060 // Remove unused parameter
             public void SomeVoidMethod(int i, string s, double d = 0)
+#pragma warning restore IDE0060 // Remove unused parameter
             { }
         }
 
