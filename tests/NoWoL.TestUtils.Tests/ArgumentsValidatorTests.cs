@@ -130,6 +130,42 @@ namespace NoWoL.TestingUtilities.Tests
         [Fact]
         [Trait("Category",
                "Unit")]
+        public void SkippedParameterShouldNotBeValidatedSync()
+        {
+            var method = typeof(AlwaysThrowTestClass).GetMethod(nameof(AlwaysThrowTestClass.DoIt));
+            var instance = new AlwaysThrowTestClass();
+            var validator = new ParametersValidator(instance,
+                                                    method,
+                                                    null,
+                                                    ParametersValidatorHelper.DefaultCreators.Union(new[] { new ComplexTestClassObjectCreator() }).ToArray());
+
+            validator.SetupAll(ParametersValidator.DefaultRules)
+                     .Validate();
+
+            Assert.False(instance.WasCalled);
+        }
+
+        [Fact]
+        [Trait("Category",
+               "Unit")]
+        public async Task SkippedParameterShouldNotBeValidatedAsync()
+        {
+            var method = typeof(AlwaysThrowTestClass).GetMethod(nameof(AlwaysThrowTestClass.DoItAsync));
+            var instance = new AlwaysThrowTestClass();
+            var validator = new ParametersValidator(instance,
+                                                    method,
+                                                    null,
+                                                    ParametersValidatorHelper.DefaultCreators.Union(new[] { new ComplexTestClassObjectCreator() }).ToArray());
+
+            await validator.SetupAll(ParametersValidator.DefaultRules)
+                           .ValidateAsync().ConfigureAwait(false);
+
+            Assert.False(instance.WasCalled);
+        }
+
+        [Fact]
+        [Trait("Category",
+               "Unit")]
         public void SetupFallbackToNoneIfRulesWereNotDefineForDataType()
         {
             var validator = ParametersValidatorHelper.GetMethodParametersValidator(new ComplexTestClass(),

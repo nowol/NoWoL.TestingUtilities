@@ -143,6 +143,18 @@ validator.SetupAll(ParametersValidator.DefaultRules) // Use the default rules or
          .Validate();
 ```
 
+### Default Validation Rules
+
+The library provides a default list of rules with the common validation (`ParametersValidator.DefaultRules`). The validation rules are configured like so:
+
+* String: ExpectedExceptionRules.NotNull, ExpectedExceptionRules.NotEmptyOrWhiteSpace
+* ValueTypes: ExpectedExceptionRules.SkipParameter
+* Interfaces: ExpectedExceptionRules.NotNull
+* CollectionTypes: ExpectedExceptionRules.NotNull
+* OtherTypes: ExpectedExceptionRules.NotNull
+
+As you can see, the value types are configured to use the `ExpectedExceptionRules.SkipParameter` rules and will not be validate by default. You can change this behavior by creating your own default rules when creating the validator.
+
 ### Exception Validation Rules
 
 The library comes with the most common validation rules for no exception, not empty, not empty or white-space, not null and specific invalid value. The `ExpectedExceptionRules` class holds instances of these rules.

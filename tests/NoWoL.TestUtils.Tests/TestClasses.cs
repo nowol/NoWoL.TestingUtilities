@@ -442,4 +442,22 @@ namespace NoWoL.TestingUtilities.Tests
             return null;
         }
     }
+
+    [ExcludeFromCodeCoverage]
+    public class AlwaysThrowTestClass
+    {
+        public bool WasCalled = false;
+
+        public void DoIt(int param1)
+        {
+            WasCalled = true;
+            throw new Exception("This method should never be called");
+        }
+
+        public Task DoItAsync(int param1)
+        {
+            WasCalled = true;
+            throw new Exception("This method should never be called");
+        }
+    }
 }

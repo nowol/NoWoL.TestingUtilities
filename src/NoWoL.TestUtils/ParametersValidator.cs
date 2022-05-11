@@ -76,7 +76,7 @@ namespace NoWoL.TestingUtilities
             return new ParametersValidationRules
                    {
                        StringRules = new []{ ExpectedExceptionRules.NotNull, ExpectedExceptionRules.NotEmptyOrWhiteSpace },
-                       ValueTypesRules = new []{ ExpectedExceptionRules.None },
+                       ValueTypesRules = new []{ ExpectedExceptionRules.SkipParameter },
                        InterfacesRules = new []{ ExpectedExceptionRules.NotNull },
                        CollectionTypesRules = new []{ ExpectedExceptionRules.NotNull },
                        OtherTypesRules = new []{ ExpectedExceptionRules.NotNull },
@@ -231,6 +231,11 @@ namespace NoWoL.TestingUtilities
                 var param = _parameters[i];
                 var rules = _expectedExceptions[param.Name];
 
+                if (SkipParameterExceptionRule.IsSkipParameterExceptionRule(rules))
+                {
+                    continue;
+                }
+
                 foreach (var rule in rules)
                 {
                     var arguments = defaultArguments.ToArray(); // copy array to avoid recreating the default arguments every time
@@ -284,6 +289,11 @@ namespace NoWoL.TestingUtilities
             {
                 var param = _parameters[i];
                 var rules = _expectedExceptions[param.Name];
+
+                if (SkipParameterExceptionRule.IsSkipParameterExceptionRule(rules))
+                {
+                    continue;
+                }
 
                 foreach (var rule in rules)
                 {

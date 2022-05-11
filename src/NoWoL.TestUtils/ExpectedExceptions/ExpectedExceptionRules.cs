@@ -9,7 +9,12 @@
         /// Gets a rule when no exception occurs.
         /// </summary>
         public static IExpectedExceptionRule None => new ExpectedNoExceptionRule();
-        
+
+        /// <summary>
+        /// Gets a rule which skip this parameter.
+        /// </summary>
+        public static IExpectedExceptionRule SkipParameter => new SkipParameterExceptionRule();
+
         /// <summary>
         /// Gets a rule when a null value is not allowed.
         /// </summary>
